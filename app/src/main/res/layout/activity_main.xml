@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
+        android:id="@+id/fram"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/space"
         app:layout_constraintRight_toRightOf="parent"
@@ -14,7 +15,7 @@
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-    </androidx.recyclerview.widget.RecyclerView>
+    </FrameLayout>
     <Button
         android:id="@+id/btn1"
         android:text="btn1"
