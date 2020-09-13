@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_login"
+    android:orientation="vertical"
+    android:gravity="center">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity=""
+            android:background="@drawable/uniconrainbow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SIGN UP"
+            android:textSize="50dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="370dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/rectangle_shape"
+        android:orientation="vertical"
+        android:gravity="center">
+        <EditText
+            android:id="@+id/edt_mail_signUp"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/edit_text_1"
+            android:textColor="@color/white"
+            android:hint="Enter your mail"
+            android:textColorHint="@color/white"
+            android:textSize="20dp"
+            android:drawableLeft="@drawable/ic_account_circle"
+            android:drawableTint="@color/white"
+            android:drawablePadding="10dp"
+            android:maxLines="1"
+            />
+        <EditText
+            android:id="@+id/edt_pwd_signUp"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edit_text_1"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:hint="Enter your password"
+            android:textColorHint="@color/white"
+            android:textSize="20dp"
+            android:inputType="textPassword"
+            android:drawableLeft="@drawable/ic_key"
+            android:drawableTint="@color/white"
+            android:drawablePadding="10dp"
+            android:maxLines="1"
+            />
+        <EditText
+            android:id="@+id/edt_name_signUp"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edit_text_1"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:hint="Enter your name"
+            android:textColorHint="@color/white"
+            android:textSize="20dp"
+            android:drawableLeft="@drawable/ic_how_to_reg"
+            android:drawableTint="@color/white"
+            android:drawablePadding="10dp"
+            android:maxLines="1"
+            />
+        <com.santalu.maskedittext.MaskEditText
+            android:id="@+id/edt_phone_signUp"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/edit_text_1"
+            android:padding="10dp"
+            android:textColor="@color/white"
+            android:hint="Enter your phone number"
+            app:met_mask="+84 # #### ####"
+            android:textColorHint="@color/white"
+            android:textSize="20dp"
+            android:inputType="phone"
+            android:drawableLeft="@drawable/ic_contact_phone"
+            android:drawableTint="@color/white"
+            android:drawablePadding="10dp"
+            android:maxLines="1" />
+
+        <Button
+            android:id="@+id/bt_signUp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/button_1"
+            android:text="@string/start_now"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bt_signIn"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_2"
+        android:text="LOGIN NOW"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
+
+    <ProgressBar
+        android:id="@+id/progress_signUp"
+        android:layout_marginTop="20dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center|bottom"
+        android:visibility="gone"/>
+
+</LinearLayout>
