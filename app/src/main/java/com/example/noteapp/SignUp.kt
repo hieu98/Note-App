@@ -18,6 +18,8 @@ import com.santalu.maskedittext.MaskEditText
 import kotlinx.android.synthetic.main.signup_activity.*
 
 class SignUp : AppCompatActivity() {
+    private val DEFAULT_IMAGE_URL = "https://ibb.co/8rbmbc2"
+
     private var inputEmail : EditText?=null
     private var inputPassword : EditText?=null
     private var inputName : EditText?=null
@@ -57,6 +59,7 @@ class SignUp : AppCompatActivity() {
             val password = inputPassword!!.text.toString().trim()
             val name = inputName!!.text.toString().trim()
             val phone = edt_phone_signUp.text.toString()
+            val imageProfile = DEFAULT_IMAGE_URL
 
             val visibility = if (mprogressBar!!.visibility == View.GONE) View.VISIBLE else View.GONE
             mprogressBar.visibility = visibility
@@ -77,10 +80,6 @@ class SignUp : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Enter your name!", Toast.LENGTH_LONG).show()
                 return@OnClickListener
             }
-//            if (TextUtils.isEmpty(phone)){
-//                Toast.makeText(applicationContext, "Enter your phone number!", Toast.LENGTH_LONG).show()
-//                return@OnClickListener
-//            }
 
             fbAuth!!.createUserWithEmailAndPassword(email!!, password!!)
                 .addOnCompleteListener(this) {task ->
@@ -90,7 +89,9 @@ class SignUp : AppCompatActivity() {
                         val userId = fbAuth!!.currentUser!!.uid
                         val currentUserDb = mRef!!.child(userId)
                         currentUserDb.child("Name").setValue(name)
+                        currentUserDb.child("Email").setValue(email)
                         currentUserDb.child("Phone Number").setValue(phone)
+                        currentUserDb.child("The Album").child("User Avatar").setValue(imageProfile)
                         updateUserInfoAndUI()
                     }else{
                         Log.w("TAG", "createNewAccount:failure", task.exception)
@@ -104,6 +105,7 @@ class SignUp : AppCompatActivity() {
     private fun updateUserInfoAndUI(){
         val intent = Intent(this@SignUp, MainActivity::class.java)
         intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 

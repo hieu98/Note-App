@@ -19,4 +19,12 @@
     <color name="colorGreen1">#69F0AE</color>
     <color name="colorPink2">#F8BBD0</color>
     <color name="colorIndino">#8C9EFF</color>
+    <color name="colorUserBlue">#1574f8</color>
+    <color name="colorUserPurple">#54499e</color>
+    <color name="colorUserPink">#ffb4c4</color>
+    <color name="colorUserBlack">#1D2433</color>
+    <color name="colorUserBlue1">#AEE0ED</color>
+    <color name="colorUserBlue2">#ADC2ee</color>
+    <color name="colorUserPink1">#f3d2e6</color>
+    <color name="colorUserBlack1">#2d2942</color>
 </resources>

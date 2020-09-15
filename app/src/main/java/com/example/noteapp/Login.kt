@@ -22,13 +22,8 @@ class Login : AppCompatActivity() {
 
     protected override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        hideSystemUI()
         setContentView(R.layout.login_activity)
 
-//        if (fbAuth!!.currentUser != null){
-//            startActivity(Intent(this@Login, MainActivity::class.java))
-//            finish()
-//        }
         setContentView(R.layout.login_activity)
         inputEmail = findViewById(R.id.edt_mail_login) as EditText
         inputPassword = findViewById(R.id.edt_pwd_login) as EditText
@@ -55,30 +50,39 @@ class Login : AppCompatActivity() {
 
             val visibility = if (processBar!!.visibility == View.GONE) View.VISIBLE else View.GONE
 
-            if(TextUtils.isEmpty(email)){
-                Toast.makeText(applicationContext,"Please Enter your email!", Toast.LENGTH_SHORT).show()
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(applicationContext, "Please Enter your email!", Toast.LENGTH_SHORT)
+                    .show()
                 return@OnClickListener
             }
-            if (TextUtils.isEmpty(password)){
-                Toast.makeText(applicationContext,"Please Enter your password!", Toast.LENGTH_SHORT).show()
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(
+                    applicationContext,
+                    "Please Enter your password!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@OnClickListener
             }
             processBar.visibility = visibility
 
             fbAuth!!.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, OnCompleteListener {
-                    task ->
+                .addOnCompleteListener(this, OnCompleteListener { task ->
 
-                    if (!task.isSuccessful){
-                        if (password.length < 6){
+                    if (!task.isSuccessful) {
+                        if (password.length < 6) {
                             inputPassword!!.setError(getString(R.string.minium_password))
-                        }else{
-                            Toast.makeText(this@Login, getString(R.string.auth_failed), Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(
+                                this@Login,
+                                getString(R.string.auth_failed),
+                                Toast.LENGTH_LONG
+                            ).show()
                             processBar.visibility = visibility
                         }
-                    }else{
+                    } else {
                         val intent = Intent(this@Login, MainActivity::class.java)
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                         finish()
                     }
@@ -87,14 +91,16 @@ class Login : AppCompatActivity() {
     }
 
 // Giữ nguyên trạng thái đăng nhập cho các lần sử dụng sau
-//    override fun onStart() {
-//        super.onStart()
-//        if (fbAuth?.currentUser == null){
+    override fun onStart() {
+        super.onStart()
+        if (fbAuth?.currentUser == null){
 //            startActivity(Intent(this@Login, Login::class.java))
-//        }else{
-//            startActivity(Intent(this@Login, MainActivity::class.java))
-//        }
-//    }
+        }else{
+            val i = Intent(this@Login, MainActivity::class.java)
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(i)
+        }
+    }
     private fun sendPasswordResetEmail(){
         val email = inputEmail?.text.toString()
         val processBar = findViewById<ProgressBar>(R.id.progress_circle)
@@ -102,13 +108,14 @@ class Login : AppCompatActivity() {
 
         if (!TextUtils.isEmpty(email)){
             fbAuth!!.sendPasswordResetEmail(email)
-                .addOnCompleteListener{task ->
+                .addOnCompleteListener{ task ->
                     if (task.isSuccessful){
                         val message = "Email sent."
                         Log.d("TAG", message)
                         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                         val intent = Intent(this@Login, Login::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                         processBar.visibility = visibility
                     }else{
@@ -121,16 +128,6 @@ class Login : AppCompatActivity() {
             Toast.makeText(this, "Please Enter your email!", Toast.LENGTH_SHORT).show()
             processBar.visibility = visibility
         }
-    }
-
-    private fun hideSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                // Hide the nav bar and status bar
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 
 }
