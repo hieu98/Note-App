@@ -72,7 +72,7 @@ class UserFragment() : Fragment() {
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
 
-//        var imgAvatar = view.findViewById<ImageView>(R.id.edt_user_avatar)
+        var imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
         var tvName = view.findViewById<TextView>(R.id.tv_user_name)
         var tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
         var tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
@@ -83,6 +83,9 @@ class UserFragment() : Fragment() {
                 tvName!!.text = "" + snapshot!!.child("Name").value
                 tvEmail!!.text = "" + snapshot!!.child("Email").value
                 tvPhone.text = "" + snapshot!!.child("Phone Number").value
+
+                val message:String = "" + snapshot!!.child("The Album").child("User Avatar").value
+                Picasso.get().load(message).into(imgAvatar)
             }
 
             override fun onCancelled(error: DatabaseError) {}

@@ -18,7 +18,7 @@ import com.santalu.maskedittext.MaskEditText
 import kotlinx.android.synthetic.main.signup_activity.*
 
 class SignUp : AppCompatActivity() {
-    private val DEFAULT_IMAGE_URL = "https://ibb.co/8rbmbc2"
+    private val DEFAULT_IMAGE_URL = "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png"
 
     private var inputEmail : EditText?=null
     private var inputPassword : EditText?=null
@@ -61,31 +61,35 @@ class SignUp : AppCompatActivity() {
             val phone = edt_phone_signUp.text.toString()
             val imageProfile = DEFAULT_IMAGE_URL
 
-            val visibility = if (mprogressBar!!.visibility == View.GONE) View.VISIBLE else View.GONE
-            mprogressBar.visibility = visibility
+            mprogressBar.visibility = View.VISIBLE
 
             if (TextUtils.isEmpty(email)){
                 Toast.makeText(applicationContext, "Enter your email!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (TextUtils.isEmpty(password)){
                 Toast.makeText(applicationContext, "Enter your password!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (password.length < 6){
                 Toast.makeText(applicationContext, "Password too short!Please enter more than 6 characters!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (TextUtils.isEmpty(name)){
                 Toast.makeText(applicationContext, "Enter your name!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
 
             fbAuth!!.createUserWithEmailAndPassword(email!!, password!!)
                 .addOnCompleteListener(this) {task ->
                     if (task.isSuccessful){
+                        mprogressBar.visibility = View.GONE
                         Toast.makeText(applicationContext, "Create New Account Successfully!Welcome!", Toast.LENGTH_LONG).show()
-                        mprogressBar.visibility = visibility
+
                         val userId = fbAuth!!.currentUser!!.uid
                         val currentUserDb = mRef!!.child(userId)
                         currentUserDb.child("Name").setValue(name)
@@ -96,7 +100,7 @@ class SignUp : AppCompatActivity() {
                     }else{
                         Log.w("TAG", "createNewAccount:failure", task.exception)
                         Toast.makeText(applicationContext, "Create New Account Failed! Please try again", Toast.LENGTH_LONG).show()
-                        mprogressBar.visibility = visibility
+                        mprogressBar.visibility = View.GONE
                     }
                 }
 

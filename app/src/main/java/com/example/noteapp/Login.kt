@@ -48,22 +48,17 @@ class Login : AppCompatActivity() {
             val email = inputEmail!!.text.toString().trim()
             val password = inputPassword!!.text.toString().trim()
 
-            val visibility = if (processBar!!.visibility == View.GONE) View.VISIBLE else View.GONE
-
             if (TextUtils.isEmpty(email)) {
                 Toast.makeText(applicationContext, "Please Enter your email!", Toast.LENGTH_SHORT)
                     .show()
+                processBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (TextUtils.isEmpty(password)) {
-                Toast.makeText(
-                    applicationContext,
-                    "Please Enter your password!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(applicationContext, "Please Enter your password!", Toast.LENGTH_SHORT).show()
+                processBar.visibility = View.GONE
                 return@OnClickListener
             }
-            processBar.visibility = visibility
 
             fbAuth!!.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, OnCompleteListener { task ->
@@ -71,21 +66,18 @@ class Login : AppCompatActivity() {
                     if (!task.isSuccessful) {
                         if (password.length < 6) {
                             inputPassword!!.setError(getString(R.string.minium_password))
+                            processBar.visibility = View.GONE
                         } else {
-                            Toast.makeText(
-                                this@Login,
-                                getString(R.string.auth_failed),
-                                Toast.LENGTH_LONG
-                            ).show()
-                            processBar.visibility = visibility
+                            Toast.makeText(this@Login, getString(R.string.auth_failed), Toast.LENGTH_LONG).show()
+                            processBar.visibility = View.GONE
                         }
                     } else {
                         val intent = Intent(this@Login, MainActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                         finish()
                     }
+
                 })
         })
     }

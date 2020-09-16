@@ -55,7 +55,7 @@ class EditUserFragment : Fragment() {
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
 
-//        var imgAvatar = view.findViewById<ImageView>(R.id.edt_user_avatar)
+        var imgAvatar = view.findViewById<ImageView>(R.id.edt_user_avatar)
         var tvName = view.findViewById<TextView>(R.id.edt_user_name)
         var tvEmail = view.findViewById<TextView>(R.id.edt_user_mail)
         var tvPhone = view.findViewById<TextView>(R.id.edit_user_phone)
@@ -66,6 +66,9 @@ class EditUserFragment : Fragment() {
                     tvName!!.text = "" + snapshot!!.child("Name").value
                     tvEmail!!.text = "" + snapshot!!.child("Email").value
                     tvPhone.text = "" + snapshot!!.child("Phone Number").value
+
+                val message:String = "" + snapshot!!.child("The Album").child("User Avatar").value
+                Picasso.get().load(message).into(imgAvatar)
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -79,14 +82,11 @@ class EditUserFragment : Fragment() {
         var edtName = view!!.findViewById<TextView>(R.id.edt_user_name)
         edtName!!.setOnClickListener(View.OnClickListener {
             alertEditName("Name")
-
         })
 
         edit_user_phone!!.setOnClickListener(View.OnClickListener {
             alertEditPhone("Phone Number")
         })
-
-
     }
 
     private fun alertEditName(key: String) {
@@ -116,7 +116,7 @@ class EditUserFragment : Fragment() {
                         Toast.makeText(activity, "Update Failed ", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                Toast.makeText(activity, "Please enter $key", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Please Enter $key", Toast.LENGTH_SHORT).show()
             }
         }
 

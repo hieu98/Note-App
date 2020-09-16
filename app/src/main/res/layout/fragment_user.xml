@@ -61,7 +61,7 @@
                     android:id="@+id/imgbt_user_avatar"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:src="@drawable/ic_account_circle2" />
+                    android:scaleType="centerCrop"/>
 
                 <TextView
                     android:id="@+id/tv_user_name"
