@@ -1,13 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserFragment">
+    android:background="@color/colorUserPink1"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    tools:context=".fragment.UserFragment">
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@color/colorUserBlue2"
+            tools:ignore="MissingConstraints" />
 
-    <TextView
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_below="@+id/view"
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_bg_wave_header2"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="240dp"
+            tools:ignore="MissingConstraints" />
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="user fragment" />
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        tools:ignore="MissingConstraints">
+        <Button
+            android:id="@+id/bt_logOut"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/ic_baseline_exit_to_app"
+            />
+    </LinearLayout>
+    <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="210dp"
+                android:layout_marginTop="65dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                tools:ignore="MissingConstraints">
 
-</FrameLayout>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="@color/white"
+                    android:id="@+id/imgbt_user_avatar"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"/>
+
+                <TextView
+                    android:id="@+id/tv_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/josefinsans_semibold"
+                    android:text="User Name"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorUserPurple"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/caveatbrush_regular"
+                        android:text="Album"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorUserBlack1"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_num_album"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/caveatbrush_regular"
+                        android:hint="0"
+                        android:textColor="@color/colorUserBlack1"
+                        android:textColorHint="@color/colorBlueGrey"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="120dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/caveatbrush_regular"
+                        android:text="Image"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorUserBlack1"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_num_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/caveatbrush_regular"
+                        android:hint="0"
+                        android:textColor="@color/colorUserBlack1"
+                        android:textColorHint="@color/colorBlueGrey"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_user_mail"
+                android:layout_width="300dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/colorUserBlack1"
+                android:fontFamily="@font/balootammudu2_medium"
+                android:hint="No Email Infomation"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorUserBlack"
+                android:textColorHint="@color/colorBlueGrey"
+                android:textSize="25sp"
+                app:drawableLeftCompat="@drawable/ic_baseline_mail" />
+
+            <TextView
+                android:id="@+id/tv_user_phone"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:drawableLeft="@drawable/ic_contact_phone1"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/colorUserBlack1"
+                android:fontFamily="@font/latoregular"
+                android:hint="No Phone Number"
+                android:textColor="@color/colorUserBlack"
+                android:textColorHint="@color/colorBlueGrey"
+                android:textSize="20sp"
+                android:inputType="phone"/>
+
+            <Button
+                android:id="@+id/bt_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/button_2"
+                android:text="EDIT"
+                android:textSize="15sp"/>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

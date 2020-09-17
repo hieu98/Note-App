@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorUserPink1"
+    android:onClick="update"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:context=".fragment.EditUserFragment">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/colorUserBlue2"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/view"
+        android:scaleType="fitStart"
+        android:src="@drawable/ic_bg_wave_header2"
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="240dp" />
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:layout_marginTop="65dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            tools:ignore="MissingConstraints">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/edt_user_avatar"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                app:civ_border_color="@color/white"
+                app:civ_border_width="2dp" />
+
+            <TextView
+                android:id="@+id/edt_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/josefinsans_semibold"
+                android:text="User Name"
+                android:textAllCaps="false"
+                android:textColor="@color/colorUserPurple"
+                android:textSize="40dp"
+                android:textStyle="bold"
+                android:maxLines="1"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/edt_user_mail"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="30dp"
+            android:drawableLeft="@drawable/ic_baseline_mail"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/colorUserBlack1"
+            android:fontFamily="@font/balootammudu2_medium"
+            android:hint="No Email Information"
+            android:textColor="@color/colorUserBlack"
+            android:textColorHint="@color/colorBlueGrey"
+            android:textSize="25dp" />
+
+        <TextView
+            android:id="@+id/edit_user_phone"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:drawableLeft="@drawable/ic_contact_phone1"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/colorUserBlack1"
+            android:fontFamily="@font/latoregular"
+            android:hint="No Phone Number"
+            android:textColor="@color/colorUserBlack"
+            android:textColorHint="@color/colorBlueGrey"
+            android:textSize="20dp"
+            android:maxLines="1"/>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="35dp"
+    android:padding="5dp"
+    android:gravity="right"
+    android:orientation="vertical">
+    <Button
+        android:id="@+id/bt_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_gravity="center"
+        android:background="@drawable/button_2"
+        android:text="SAVE"
+        android:textSize="15dp" />
+    <ProgressBar
+        android:id="@+id/progress_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        />
+</LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

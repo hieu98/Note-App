@@ -2,5 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+<<<<<<< HEAD
+=======
+    <mapping directory="$PROJECT_DIR$/Note-App" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Unicon-Image" vcs="Git" />
+>>>>>>> 3ad2be0468a0badd7a7153275b50be86c300446d
   </component>
 </project>

@@ -1,10 +1,11 @@
-package com.example.noteapp
+package com.example.noteapp.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.noteapp.R
 
 
 class HomeFragment : Fragment() {
@@ -26,7 +27,7 @@ class HomeFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() : HomeFragment{
+        fun newInstance() : HomeFragment {
             return HomeFragment()
         }
     }

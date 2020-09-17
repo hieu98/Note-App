@@ -2,7 +2,6 @@ package com.example.noteapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -14,10 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.santalu.maskedittext.MaskEditText
 import kotlinx.android.synthetic.main.signup_activity.*
 
 class SignUp : AppCompatActivity() {
+    private val DEFAULT_IMAGE_URL = "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png"
+
     private var inputEmail : EditText?=null
     private var inputPassword : EditText?=null
     private var inputName : EditText?=null
@@ -34,7 +34,7 @@ class SignUp : AppCompatActivity() {
 
         fbAuth = FirebaseAuth.getInstance()
         mDatabase = FirebaseDatabase.getInstance()
-        mRef = mDatabase!!.reference!!.child("Users")
+        mRef = mDatabase!!.reference.child("Users")
 
         btnSignIn = findViewById(R.id.bt_signIn) as Button
         btnSignUp = findViewById(R.id.bt_signUp) as Button
@@ -46,56 +46,59 @@ class SignUp : AppCompatActivity() {
 
 
 
-        btnSignIn!!.setOnClickListener(View.OnClickListener {
-            val visibility = if (mprogressBar!!.visibility == View.GONE) View.VISIBLE else View.GONE
+        btnSignIn!!.setOnClickListener {
+            val visibility = if (mprogressBar.visibility == View.GONE) View.VISIBLE else View.GONE
             mprogressBar.visibility = visibility
             finish()
-        })
+        }
 
         btnSignUp!!.setOnClickListener(View.OnClickListener {
             val email = inputEmail!!.text.toString().trim()
             val password = inputPassword!!.text.toString().trim()
             val name = inputName!!.text.toString().trim()
             val phone = edt_phone_signUp.text.toString()
+            val imageProfile = DEFAULT_IMAGE_URL
 
-            val visibility = if (mprogressBar!!.visibility == View.GONE) View.VISIBLE else View.GONE
-            mprogressBar.visibility = visibility
+            mprogressBar.visibility = View.VISIBLE
 
             if (TextUtils.isEmpty(email)){
                 Toast.makeText(applicationContext, "Enter your email!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (TextUtils.isEmpty(password)){
                 Toast.makeText(applicationContext, "Enter your password!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (password.length < 6){
                 Toast.makeText(applicationContext, "Password too short!Please enter more than 6 characters!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
             if (TextUtils.isEmpty(name)){
                 Toast.makeText(applicationContext, "Enter your name!", Toast.LENGTH_LONG).show()
+                mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
-//            if (TextUtils.isEmpty(phone)){
-//                Toast.makeText(applicationContext, "Enter your phone number!", Toast.LENGTH_LONG).show()
-//                return@OnClickListener
-//            }
 
-            fbAuth!!.createUserWithEmailAndPassword(email!!, password!!)
+            fbAuth!!.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) {task ->
                     if (task.isSuccessful){
+                        mprogressBar.visibility = View.GONE
                         Toast.makeText(applicationContext, "Create New Account Successfully!Welcome!", Toast.LENGTH_LONG).show()
-                        mprogressBar.visibility = visibility
+
                         val userId = fbAuth!!.currentUser!!.uid
                         val currentUserDb = mRef!!.child(userId)
                         currentUserDb.child("Name").setValue(name)
+                        currentUserDb.child("Email").setValue(email)
                         currentUserDb.child("Phone Number").setValue(phone)
+                        currentUserDb.child("The Album").child("User Avatar").setValue(imageProfile)
                         updateUserInfoAndUI()
                     }else{
                         Log.w("TAG", "createNewAccount:failure", task.exception)
                         Toast.makeText(applicationContext, "Create New Account Failed! Please try again", Toast.LENGTH_LONG).show()
-                        mprogressBar.visibility = visibility
+                        mprogressBar.visibility = View.GONE
                     }
                 }
 
@@ -104,12 +107,13 @@ class SignUp : AppCompatActivity() {
     private fun updateUserInfoAndUI(){
         val intent = Intent(this@SignUp, MainActivity::class.java)
         intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 
     //Xác thực email có tồn tại hay không
     private fun verifyEmail(){
-        val mUser = fbAuth!!.currentUser;
+        val mUser = fbAuth!!.currentUser
         mUser!!.sendEmailVerification()
             .addOnCompleteListener(this){ task ->
                 if (task.isSuccessful){
