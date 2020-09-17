@@ -1,21 +1,13 @@
 <resources>
     <!-- Base application theme. -->
-<<<<<<< HEAD
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-=======
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
->>>>>>> 3ad2be0468a0badd7a7153275b50be86c300446d
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
     <style name="LogInAndLogUpPage" parent="Theme.AppCompat.NoActionBar">
-<<<<<<< HEAD
         <!-- Customize your theme here. -->
-=======
->>>>>>> 3ad2be0468a0badd7a7153275b50be86c300446d
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPink1</item>
         <item name="colorAccent">@color/colorAccent</item>
