@@ -17,7 +17,6 @@
             android:layout_height="100dp"
             android:background="@color/colorUserBlue2"
             tools:ignore="MissingConstraints" />
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -150,12 +149,12 @@
                 android:layout_marginTop="20dp"
                 android:drawablePadding="10dp"
                 android:drawableTint="@color/colorUserBlack1"
-                android:fontFamily="@font/balootammudu2_medium"
+                android:fontFamily="@font/latoregular"
                 android:hint="No Email Infomation"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorUserBlack"
                 android:textColorHint="@color/colorBlueGrey"
-                android:textSize="25sp"
+                android:textSize="23sp"
                 app:drawableLeftCompat="@drawable/ic_baseline_mail" />
 
             <TextView

@@ -18,7 +18,6 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 
 class EditUserFragment : Fragment() {
-
     private var mDatabaseReference: DatabaseReference? = null
     private var mDatabase: FirebaseDatabase? = null
     private var mAuth: FirebaseAuth? = null
@@ -65,11 +64,9 @@ class EditUserFragment : Fragment() {
                     tvName!!.text = "" + snapshot!!.child("Name").value
                     tvEmail!!.text = "" + snapshot!!.child("Email").value
                     tvPhone.text = "" + snapshot!!.child("Phone Number").value
-
-                val message:String = "" + snapshot!!.child("The Album").child("User Avatar").value
+                val message:String = "" + snapshot.child("The Album").child("User Avatar").value
                 Picasso.get().load(message).into(imgAvatar)
             }
-
             override fun onCancelled(error: DatabaseError) {}
         })
             return view
@@ -118,7 +115,6 @@ class EditUserFragment : Fragment() {
                 Toast.makeText(activity, "Please Enter $key", Toast.LENGTH_SHORT).show()
             }
         }
-
         alertDialog2.setNegativeButton("Cancel") { dialog, which ->
             Toast.makeText(activity, "You clicked on Cancel", Toast.LENGTH_SHORT)
                 .show()

@@ -12,7 +12,6 @@ import com.luseen.spacenavigation.SpaceNavigationView
 import com.luseen.spacenavigation.SpaceOnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity() {
     val fragment1: Fragment = HomeFragment()
     val fragment2: Fragment = UserFragment()
@@ -28,9 +27,9 @@ class MainActivity : AppCompatActivity() {
         nav.initWithSaveInstanceState(savedInstanceState)
         nav.addSpaceItem(SpaceItem("HOME", R.drawable.ic_baseline_home_24))
         nav.addSpaceItem(SpaceItem("USER", R.drawable.ic_baseline_person_24))
-        supportFragmentManager.beginTransaction().hide(UserFragment()).commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment2, "2").commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment1, "1").commit()
+        supportFragmentManager.beginTransaction().hide(fragment2).commit()
         nav.setSpaceOnClickListener(object : SpaceOnClickListener {
             override fun onCentreButtonClick() {
 //                Toast.makeText(this@MainActivity, "onCentreButtonClick", Toast.LENGTH_SHORT).show()
@@ -46,7 +45,6 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClick(itemIndex: Int, itemName: String) {
 //                Toast.makeText(this@MainActivity, "$itemIndex $itemName", Toast.LENGTH_SHORT).show()
                 if (itemName == "HOME") {
-
                     supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
                     active = fragment1
                 } else {
@@ -57,13 +55,13 @@ class MainActivity : AppCompatActivity() {
 
             override fun onItemReselected(itemIndex: Int, itemName: String) {
 //                Toast.makeText(this@MainActivity, "$itemIndex $itemName", Toast.LENGTH_SHORT).show()
-                if (itemName == "HOME") {
-                    supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
-                    active = fragment1
-                } else {
-                    supportFragmentManager.beginTransaction().hide(active).show(fragment2).commit()
-                    active = fragment2
-                }
+//                if (itemName == "HOME") {
+//                    supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
+//                    active = fragment1
+//                } else {
+//                    supportFragmentManager.beginTransaction().hide(active).show(fragment2).commit()
+//                    active = fragment2
+//                }
             }
         })
     }
@@ -75,7 +73,6 @@ class MainActivity : AppCompatActivity() {
         }else {
             btn1.visibility = View.INVISIBLE
             btn2.visibility = View.INVISIBLE
-
         }
     }
 
