@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SIGN UP"
-            android:textSize="50dp"
+            android:textSize="50sp"
             android:textStyle="bold"
             android:textColor="@color/white"
             />
@@ -47,7 +47,7 @@
             android:textColor="@color/white"
             android:hint="Enter your mail"
             android:textColorHint="@color/white"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:drawableLeft="@drawable/ic_account_circle"
             android:drawableTint="@color/white"
             android:drawablePadding="10dp"
@@ -64,7 +64,7 @@
             android:textColor="@color/white"
             android:hint="Enter your password"
             android:textColorHint="@color/white"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:inputType="textPassword"
             android:drawableLeft="@drawable/ic_key"
             android:drawableTint="@color/white"
@@ -82,7 +82,7 @@
             android:textColor="@color/white"
             android:hint="Enter your name"
             android:textColorHint="@color/white"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:drawableLeft="@drawable/ic_how_to_reg"
             android:drawableTint="@color/white"
             android:drawablePadding="10dp"
@@ -100,12 +100,13 @@
             android:hint="Enter your phone number"
             app:met_mask="+84 # #### ####"
             android:textColorHint="@color/white"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:inputType="phone"
             android:drawableLeft="@drawable/ic_contact_phone"
             android:drawableTint="@color/white"
             android:drawablePadding="10dp"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:drawableStart="@drawable/ic_contact_phone" />
 
         <Button
             android:id="@+id/bt_signUp"
@@ -127,7 +128,7 @@
         android:background="@drawable/button_2"
         android:text="LOGIN NOW"
         android:textColor="@color/white"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <ProgressBar
         android:id="@+id/progress_signUp"
