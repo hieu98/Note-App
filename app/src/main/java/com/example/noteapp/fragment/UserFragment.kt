@@ -21,7 +21,6 @@ import com.squareup.picasso.Picasso
 
 
 class UserFragment() : Fragment() {
-
     private var mDatabaseReference:DatabaseReference? = null
     private var mDatabase:FirebaseDatabase? = null
     private var mAuth:FirebaseAuth? = null
@@ -30,9 +29,8 @@ class UserFragment() : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
-
         mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("Users")
+        mDatabaseReference = mDatabase!!.reference.child("Users")
 
     }
 

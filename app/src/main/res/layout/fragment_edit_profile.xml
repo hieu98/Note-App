@@ -78,7 +78,7 @@
             android:hint="No Email Information"
             android:textColor="@color/colorUserBlack"
             android:textColorHint="@color/colorBlueGrey"
-            android:textSize="23sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/edit_user_phone"

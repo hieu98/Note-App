@@ -154,7 +154,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorUserBlack"
                 android:textColorHint="@color/colorBlueGrey"
-                android:textSize="23sp"
+                android:textSize="24sp"
                 app:drawableLeftCompat="@drawable/ic_baseline_mail" />
 
             <TextView
