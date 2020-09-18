@@ -1,12 +1,9 @@
 package com.example.noteapp.fragment
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +11,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-
 import androidx.fragment.app.Fragment
 import com.example.noteapp.Login
 import com.example.noteapp.R
@@ -22,11 +18,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_user.tv_num_album
-import kotlinx.android.synthetic.main.fragment_user.tv_user_mail
-import kotlinx.android.synthetic.main.fragment_user.tv_user_name
-import kotlinx.android.synthetic.main.fragment_user.tv_user_phone
-import java.util.zip.Inflater
 
 
 class UserFragment() : Fragment() {
@@ -35,23 +26,17 @@ class UserFragment() : Fragment() {
     private var mDatabase:FirebaseDatabase? = null
     private var mAuth:FirebaseAuth? = null
     private var fbUser: FirebaseUser? = null
+    private var AlbumRef:DatabaseReference?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAuth = FirebaseAuth.getInstance()
-
-        mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("Users")
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-//        val contextThemeWrapper : Context = ContextThemeWrapper(activity, R.style.UserFragment)
-//        val localInflater : LayoutInflater = inflater.cloneInContext(contextThemeWrapper)
+
         val view = inflater.inflate(R.layout.fragment_user, container, false)
         val activity = activity
 
@@ -71,11 +56,14 @@ class UserFragment() : Fragment() {
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
+        AlbumRef = mDatabase!!.reference!!.child("Users")
 
         var imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
         var tvName = view.findViewById<TextView>(R.id.tv_user_name)
         var tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
         var tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
+        var tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
+        var tvImage = view.findViewById<TextView>(R.id.tv_num_image)
 
         val mUserReference = mDatabaseReference!!.child(fbUser!!.uid)
         mUserReference.addValueEventListener(object : ValueEventListener {
@@ -84,11 +72,35 @@ class UserFragment() : Fragment() {
                 tvEmail!!.text = "" + snapshot!!.child("Email").value
                 tvPhone.text = "" + snapshot!!.child("Phone Number").value
 
-                val message:String = "" + snapshot!!.child("The Album").child("User Avatar").value
+                val message: String = "" + snapshot!!.child("The Album").child("User Avatar").value
                 Picasso.get().load(message).into(imgAvatar)
             }
 
             override fun onCancelled(error: DatabaseError) {}
+        })
+
+        val mAlbumReference = AlbumRef!!.child(fbUser!!.uid).child("The Album")
+        mAlbumReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var countAlbums: Int = snapshot.childrenCount.toInt()
+                tvAlbum.text = countAlbums.toString()
+
+
+//                var countImage: Int = 0
+//                for (ds in snapshot.children) {
+//                    var map : Map<String, Object> = ds.value as (Map<String, Object>)
+//                    var ctimage : Object? = map.get("Count Image")
+//                    var pValue = ctimage.toString().toInt()
+//
+//                    countImage += pValue
+//
+//                    tvImage.text = countImage.toString()
+//                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
         })
         return view
     }
