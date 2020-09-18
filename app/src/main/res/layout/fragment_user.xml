@@ -174,18 +174,6 @@
                 android:textSize="20dp"
                 android:inputType="phone"/>
 
-            <Button
-                android:id="@+id/bt_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="30dp"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/button_2"
-                android:text="EDIT"
-                android:textSize="15dp"
-                />
-
             </LinearLayout>
 
 
