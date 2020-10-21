@@ -12,13 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import com.example.noteapp.Login
+import com.example.noteapp.activity.Login
 import com.example.noteapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_user.*
 
 
 class UserFragment() : Fragment() {

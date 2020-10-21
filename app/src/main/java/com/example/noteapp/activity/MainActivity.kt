@@ -1,9 +1,10 @@
-package com.example.noteapp
+package com.example.noteapp.activity
 
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.noteapp.R
 import com.example.noteapp.fragment.HomeFragment
 import com.example.noteapp.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth

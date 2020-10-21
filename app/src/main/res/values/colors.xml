@@ -27,4 +27,15 @@
     <color name="colorUserBlue2">#ADC2ee</color>
     <color name="colorUserPink1">#f3d2e6</color>
     <color name="colorUserBlack1">#2d2942</color>
+    <color name="colorIcon11">#ABF8e7</color>
+    <color name="colorIcon12">#9c35b6</color>
+    <color name="colorIcon21">#d4145a</color>
+    <color name="colorIcon22">#fbb03b</color>
+    <color name="colorIcon31">#662d8c</color>
+    <color name="colorIcon32">#ed1e79</color>
+    <color name="colorIcon41">#9acd32</color>
+    <color name="colorIcon42">#ff69b4</color>
+    <color name="colorIcon43">#9B9096</color>
+
+
 </resources>
