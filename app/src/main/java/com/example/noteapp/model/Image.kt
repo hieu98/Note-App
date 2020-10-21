@@ -4,5 +4,5 @@ import java.io.Serializable
 
 @IgnoreExtraProperties
 
-data class Album ( val note:String, val img:String):Serializable
+data class Image ( val name:String, val note:String, val img:String, val count:String):Serializable
 

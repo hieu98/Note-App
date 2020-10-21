@@ -18,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_user.*
 
 
 class UserFragment() : Fragment() {
@@ -47,11 +46,11 @@ class UserFragment() : Fragment() {
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
         AlbumRef = mDatabase!!.reference!!.child("Users")
 
-        var imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
-        var tvName = view.findViewById<TextView>(R.id.tv_user_name)
-        var tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
-        var tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
-        var tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
+        val imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
+        val tvName = view.findViewById<TextView>(R.id.tv_user_name)
+        val tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
+        val tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
+        val tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
         var tvImage = view.findViewById<TextView>(R.id.tv_num_image)
 
 

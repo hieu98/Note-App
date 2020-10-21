@@ -1,5 +1,6 @@
 package com.example.noteapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     val fragment2: Fragment = UserFragment()
     var active = fragment1
     private var fbAuth: FirebaseAuth?=null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -24,6 +27,11 @@ class MainActivity : AppCompatActivity() {
         val nav: SpaceNavigationView = space
         var a = false
         hidebutton(a)
+        btn1.setOnClickListener {
+            val intent = Intent(this,SuaAnhActivity::class.java)
+            hidebutton(false)
+            startActivity(intent)
+        }
         nav.initWithSaveInstanceState(savedInstanceState)
         nav.addSpaceItem(SpaceItem("HOME", R.drawable.ic_baseline_home_24))
         nav.addSpaceItem(SpaceItem("USER", R.drawable.ic_baseline_person_24))
@@ -75,5 +83,4 @@ class MainActivity : AppCompatActivity() {
             btn2.visibility = View.INVISIBLE
         }
     }
-
 }

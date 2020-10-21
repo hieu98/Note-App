@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    tools:context=".SuaAnhActivity"
+    tools:showIn="@layout/activity_suaanh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_marginTop="?attr/actionBarSize"
+        android:id="@+id/image_preview"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"/>
+    <com.example.noteapp.Utils.NonSwipeableViewPage
+        android:id="@+id/viewPager"
+        android:layout_above="@+id/tabs"
+        android:layout_below="@+id/image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"/>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_alignParentBottom="true"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>
