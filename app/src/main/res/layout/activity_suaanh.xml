@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/coordinator"
-    tools:context=".SuaAnhActivity">
+    tools:context=".activity.SuaAnhActivity">
     <com.google.android.material.appbar.AppBarLayout
         android:theme="@style/AppTheme.AppBarOverlay"
         android:layout_width="match_parent"

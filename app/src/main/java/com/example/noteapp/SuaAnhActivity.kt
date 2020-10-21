@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
@@ -15,7 +17,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -24,7 +25,7 @@ import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
-import com.example.noteapp.adapater.ViewPagerAdapter
+import com.example.noteapp.adapter.ViewPagerAdapter
 import com.example.noteapp.fragment.EditImageFragment
 import com.example.noteapp.fragment.FilterListFragment
 import com.google.android.material.snackbar.Snackbar
@@ -39,10 +40,8 @@ import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.util.*
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import java.lang.Math.sqrt
+import java.util.*
 
 class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImageFragmentListener {
     val SELECT_GALLERY_PERMISSION = 1000
@@ -86,7 +85,9 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = "Filter"
         image_preview = findViewById(R.id.image_preview)
-        openCamera()
+        val a = intent.getBooleanExtra("a",false)
+        if(a)
+            openCamera()
         loadImage()
         setupViewPager(viewPager)
         tabs.setupWithViewPager(viewPager)
@@ -120,7 +121,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     }
 
     private fun loadImage() {
-        originalImage = BitmapUtils.getBitmapFromAssets(this,Main.IMAGE_NAME,300,300)
+        originalImage = BitmapUtils.getBitmapFromAssets(this,Main.IMAGE_NAME,200,300)
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
         finalImage  = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
         image_preview.setImageBitmap(originalImage)
@@ -307,7 +308,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == SELECT_GALLERY_PERMISSION){
-            val bitmap = BitmapUtils.getBitmapFromGallery(this,data?.data!!,800,800)
+            val bitmap = BitmapUtils.getBitmapFromGallery(this,data?.data!!,600,800)
 
             originalImage!!.recycle()
             filteredImage.recycle()
@@ -323,7 +324,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             filterListFragment.displayImage(originalImage)
 
         }else if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST){
-            val bitmap = BitmapUtils.getBitmapFromGallery(this,imageUri!!,800,800)
+            val bitmap = BitmapUtils.getBitmapFromGallery(this,imageUri!!,600,800)
 
             originalImage!!.recycle()
             filteredImage.recycle()

@@ -32,7 +32,11 @@ class MainActivity : AppCompatActivity() {
         btn1.setOnClickListener {
             val intent = Intent(this, SuaAnhActivity::class.java)
             hidebutton(false)
+            intent.putExtra("a",true)
             startActivity(intent)
+        }
+        btn2.setOnClickListener {
+
         }
         nav.initWithSaveInstanceState(savedInstanceState)
         nav.addSpaceItem(SpaceItem("HOME", R.drawable.ic_baseline_home_24))
@@ -44,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             override fun onCentreButtonClick() {
 //                Toast.makeText(this@MainActivity, "onCentreButtonClick", Toast.LENGTH_SHORT).show()
                 nav.setCentreButtonSelectable(true)
-                if (a == false) {
+                if (!a) {
                     hidebutton(true)
                     a = true
                 } else {
@@ -57,9 +61,13 @@ class MainActivity : AppCompatActivity() {
                 if (itemName == "HOME") {
                     supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
                     active = fragment1
+                    hidebutton(false)
+                    a=false
                 } else {
                     supportFragmentManager.beginTransaction().hide(active).show(fragment2).commit()
                     active = fragment2
+                    hidebutton(false)
+                    a=false
                 }
             }
 
@@ -77,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun hidebutton(a: Boolean) {
-        if (a==true){
+        if (a){
             btn1.visibility= View.VISIBLE
             btn2.visibility= View.VISIBLE
         }else {

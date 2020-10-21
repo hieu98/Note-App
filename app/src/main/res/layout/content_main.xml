@@ -14,7 +14,7 @@
         android:id="@+id/image_preview"
         android:scaleType="centerCrop"
         android:layout_width="match_parent"
-        android:layout_height="360dp"/>
+        android:layout_height="400dp"/>
     <com.example.noteapp.Utils.NonSwipeableViewPage
         android:id="@+id/viewPager"
         android:layout_above="@+id/tabs"
