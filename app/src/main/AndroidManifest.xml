@@ -7,21 +7,26 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera2" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.Sensor.accelermeter"
+        android:required="true"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/my_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/my_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".SuaAnhActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity android:name=".ChupAnhActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".activity.MainActivity" />
         <activity
-            android:name=".Login"
+            android:name=".activity.Login"
+
             android:theme="@style/LogInAndLogUpPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,9 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".SignUp"
+            android:name=".activity.SignUp"
             android:theme="@style/LogInAndLogUpPage" />
+>>>>>>> 751403aabfb37078c196856c5df66e130363c9bd
     </application>
 
 </manifest>

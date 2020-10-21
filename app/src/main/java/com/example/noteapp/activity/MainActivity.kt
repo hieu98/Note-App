@@ -1,10 +1,12 @@
-package com.example.noteapp
+package com.example.noteapp.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.noteapp.R
+import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.fragment.HomeFragment
 import com.example.noteapp.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         var a = false
         hidebutton(a)
         btn1.setOnClickListener {
-            val intent = Intent(this,SuaAnhActivity::class.java)
+            val intent = Intent(this, SuaAnhActivity::class.java)
             hidebutton(false)
             startActivity(intent)
         }

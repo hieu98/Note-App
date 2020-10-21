@@ -2,17 +2,23 @@ package com.example.noteapp
 
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
@@ -33,6 +39,10 @@ import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.*
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import java.lang.Math.sqrt
 
 class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImageFragmentListener {
     val SELECT_GALLERY_PERMISSION = 1000
@@ -56,10 +66,19 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     internal var imageUri:Uri? =null
     internal val CAMERA_REQUEST: Int = 9999
 
+    private var mSensorManager : SensorManager?= null
+    private var acceleration = 0f
+    private var currentAcceleration = 0f
+    private var lastAcceleration = 0f
+
+    private val SHAKE_SLOP_TIME_MS = 100000
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+
     object Main {
         val IMAGE_NAME = "flash.jpg"
 
     }
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_suaanh)
@@ -73,6 +92,15 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         tabs.setupWithViewPager(viewPager)
 
         filterListFragment = FilterListFragment.getInstance(null)
+
+        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        Objects.requireNonNull(mSensorManager)!!.registerListener(
+            sensorListener, mSensorManager!!
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
+        )
+        acceleration = 10f
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
     }
 
     private fun setupViewPager(viewPager: NonSwipeableViewPage?) {
@@ -312,5 +340,62 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
 
         }
+    }
+
+    private val sensorListener: SensorEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
+            lastAcceleration = currentAcceleration
+            currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+            val delta: Float = currentAcceleration - lastAcceleration
+            acceleration = acceleration * 0.9f + delta
+            if (acceleration > 12) {
+
+                var now : Long = System.currentTimeMillis();
+                // ignore shake events too close to each other (500ms)
+                var mShakeTimestamp: Long? = null
+                if (mShakeTimestamp != null) {
+                    if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
+                        return;
+                    }
+                }
+                mShakeTimestamp = now
+
+                if (Round(x,4)< -30.0000){
+                    val imageView = findViewById<ImageView>(R.id.image_preview)
+                    imageView.rotation = imageView.rotation - 90
+                    Toast.makeText(applicationContext, "Rotate Right", Toast.LENGTH_SHORT).show()
+                }else if (Round(x,4)>30.0000) {
+                    val imageView = findViewById<ImageView>(R.id.image_preview)
+                    imageView.rotation = imageView.rotation + 90
+                    Toast.makeText(applicationContext, "Rotate Left", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    }
+    override fun onResume() {
+        super.onResume()
+        // Add the following line to register the Session Manager Listener onResume
+        mSensorManager?.registerListener(
+            sensorListener, mSensorManager!!.getDefaultSensor(
+                Sensor.TYPE_ACCELEROMETER
+            ), SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
+
+    override fun onPause() {
+        // Add the following line to unregister the Sensor Manager onPause
+        mSensorManager?.unregisterListener(sensorListener)
+        super.onPause()
+    }
+    fun Round(Rval: Float, Rpl: Int): Float {
+        var Rval = Rval
+        val p = Math.pow(10.0, Rpl.toDouble()).toFloat()
+        Rval = Rval * p
+        val tmp = Math.round(Rval).toFloat()
+        return tmp / p
     }
 }
