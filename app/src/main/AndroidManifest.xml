@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.noteapp">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.Sensor.accelermeter"
+        android:required="true"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/my_icon"
@@ -10,8 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity
+            android:name=".SuaAnhActivity"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
+        <activity android:name=".ChupAnhActivity" />
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.Login"
+        <activity
+            android:name=".activity.Login"
+
             android:theme="@style/LogInAndLogUpPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,10 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SignUp"
-            android:theme="@style/LogInAndLogUpPage"/>
 
+        <activity
+            android:name=".activity.SignUp"
+            android:theme="@style/LogInAndLogUpPage" />
+>>>>>>> 751403aabfb37078c196856c5df66e130363c9bd
     </application>
-    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

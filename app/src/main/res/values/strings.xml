@@ -4,4 +4,24 @@
     <string name="minium_password">Your password is too short (more than 6)</string>
     <string name="auth_failed">Log In Failed!Please try again!</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="activity_title_main">Filters</string>
+    <string name="action_settings">Settings</string>
+    <string name="filters">FILTERS</string>
+    <string name="edit">EDIT</string>
+
+    <string name="lbl_brightness">BRIGHTNESS</string>
+    <string name="lbl_contrast">CONTRAST</string>
+    <string name="lbl_saturation">SATURATION</string>
+    <string name="tab_filters">FILTERS</string>
+    <string name="tab_edit">EDIT</string>
+
+
+    <string name="roboto_medium">sans-serif-medium</string>
+    <string name="filter_normal">Normal</string>
+    <string name="action_save">SAVE</string>
+    <string name="action_open">OPEN</string>
+    <string name="camera">CAMERA</string>
+    <string name="open">OPEN</string>
+    <string name="save">SAVE</string>
 </resources>

@@ -46,11 +46,11 @@ class UserFragment() : Fragment() {
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
         AlbumRef = mDatabase!!.reference!!.child("Users")
 
-        var imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
-        var tvName = view.findViewById<TextView>(R.id.tv_user_name)
-        var tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
-        var tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
-        var tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
+        val imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
+        val tvName = view.findViewById<TextView>(R.id.tv_user_name)
+        val tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
+        val tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
+        val tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
         var tvImage = view.findViewById<TextView>(R.id.tv_num_image)
 
 

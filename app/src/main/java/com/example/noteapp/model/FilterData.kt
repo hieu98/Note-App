@@ -3,6 +3,5 @@ import com.google.firebase.database.IgnoreExtraProperties
 import java.io.Serializable
 
 @IgnoreExtraProperties
-
-data class Album ( val note:String, val img:String):Serializable
+data class FilterData ( val name:String, val rule:String, val imageId:Int):Serializable
 

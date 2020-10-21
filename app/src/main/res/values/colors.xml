@@ -36,6 +36,9 @@
     <color name="colorIcon41">#9acd32</color>
     <color name="colorIcon42">#ff69b4</color>
     <color name="colorIcon43">#9B9096</color>
-
+    <color name="toolbar_color">#f8f8f8</color>
+    <color name="color_option_menu">#FF3990</color>
+    <color name="filter_label_normal">#8A8889</color>
+    <color name="filter_label_selected">#F6001D</color>
 
 </resources>
