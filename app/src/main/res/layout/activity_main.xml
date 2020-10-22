@@ -38,9 +38,9 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
-            android:padding="7dp"
+            android:paddingLeft="11dp"
             android:background="@drawable/oval_shape_3"
-            android:drawableLeft="@drawable/ic_insert_photo"
+            android:drawableLeft="@drawable/ic_baseline_library_add_24"
             android:visibility="visible"/>
     </LinearLayout>
     <com.luseen.spacenavigation.SpaceNavigationView
