@@ -20,7 +20,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -480,11 +479,11 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                 mShakeTimestamp = now
 
                 if (Round(x,4)< -30.0000){
-                    val imageView = findViewById<ImageView>(R.id.image_preview)
+                    val imageView = findViewById<PhotoEditorView>(R.id.image_preview)
                     imageView.rotation = imageView.rotation - 90
                     Toast.makeText(applicationContext, "Rotate Right", Toast.LENGTH_SHORT).show()
                 }else if (Round(x,4)>30.0000) {
-                    val imageView = findViewById<ImageView>(R.id.image_preview)
+                    val imageView = findViewById<PhotoEditorView>(R.id.image_preview)
                     imageView.rotation = imageView.rotation + 90
                     Toast.makeText(applicationContext, "Rotate Left", Toast.LENGTH_SHORT).show()
                 }
