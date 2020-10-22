@@ -11,14 +11,18 @@ import com.example.noteapp.R
 
 class EditImageFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
     private var listener: EditImageFragmentListener? = null
-    internal lateinit var seekbar_brightness : SeekBar
-    internal lateinit var seekbar_constrant : SeekBar
-    internal lateinit var seekbar_saturatation : SeekBar
+    lateinit var seekbar_brightness : SeekBar
+    lateinit var seekbar_constrant : SeekBar
+    lateinit var seekbar_saturatation : SeekBar
 
-    fun resetControl(){
-        seekbar_brightness.progress= 100
-        seekbar_constrant.progress = 0
-        seekbar_saturatation.progress = 10
+    companion object{
+        private var instance :EditImageFragment? = null
+
+        fun getInstance(): EditImageFragment {
+            if (instance == null)
+                instance = EditImageFragment()
+            return instance!!
+        }
     }
 
     fun setListener(listener: EditImageFragmentListener){
@@ -38,22 +42,26 @@ class EditImageFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
         seekbar_constrant = view.findViewById<SeekBar>(R.id.seekbar_constrant)
         seekbar_saturatation = view.findViewById<SeekBar>(R.id.seekbar_saturatation)
 
-        seekbar_brightness.max = 200
-        seekbar_brightness.progress= 100
+        seekbar_brightness!!.max = 200
+        seekbar_brightness!!.progress= 100
 
-        seekbar_constrant.max = 20
-        seekbar_constrant.progress = 0
+        seekbar_constrant!!.max = 20
+        seekbar_constrant!!.progress = 0
 
-        seekbar_saturatation.max = 30
-        seekbar_saturatation.progress = 10
+        seekbar_saturatation!!.max = 30
+        seekbar_saturatation!!.progress = 10
 
-        seekbar_saturatation.setOnSeekBarChangeListener(this)
-        seekbar_constrant.setOnSeekBarChangeListener(this)
-        seekbar_brightness.setOnSeekBarChangeListener(this)
+        seekbar_saturatation!!.setOnSeekBarChangeListener(this)
+        seekbar_constrant!!.setOnSeekBarChangeListener(this)
+        seekbar_brightness!!.setOnSeekBarChangeListener(this)
 
         return view
     }
-
+//    fun resetControl(){
+//        seekbar_brightness!!.progress= 100
+//        seekbar_constrant!!.progress = 0
+//        seekbar_saturatation!!.progress = 10
+//    }
     override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
         var progress = p1
         if(listener != null){
@@ -81,5 +89,6 @@ class EditImageFragment : Fragment(), SeekBar.OnSeekBarChangeListener {
             listener!!.onEditCompleted()
         }
     }
+
 
 }

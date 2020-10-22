@@ -81,5 +81,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:20.1.2'
     implementation 'com.google.firebase:firebase-ml-vision:24.1.0'
     implementation 'com.google.firebase:firebase-ml-vision-barcode-model:16.1.2'
+    implementation 'ja.burhanrashid52:photoeditor:1.0.0'
+    implementation 'io.github.rockerhieu:emojicon:v1.4.2'
 
 }

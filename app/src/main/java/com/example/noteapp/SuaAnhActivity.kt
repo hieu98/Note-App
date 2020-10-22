@@ -1,10 +1,12 @@
 package com.example.noteapp
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -17,18 +19,27 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
+import com.example.noteapp.Interface.IconFragmentListener
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
+import com.example.noteapp.Utils.Upload
 import com.example.noteapp.adapter.ViewPagerAdapter
 import com.example.noteapp.fragment.EditImageFragment
 import com.example.noteapp.fragment.FilterListFragment
+import com.example.noteapp.fragment.IconFragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -38,14 +49,24 @@ import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
+import ja.burhanrashid52.photoeditor.OnSaveBitmap
+import ja.burhanrashid52.photoeditor.PhotoEditor
+import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.lang.Math.sqrt
 import java.util.*
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
-class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImageFragmentListener {
+class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImageFragmentListener,
+    IconFragmentListener {
     val SELECT_GALLERY_PERMISSION = 1000
-
+    private val PICK_IMAGE_REQUEST = 111
+    private var firebaseStorage: FirebaseStorage? = null
+    private var storageReference: StorageReference? = null
+    private var databaseReference: DatabaseReference? = null
+    lateinit var photoEditor: PhotoEditor
     init {
         System.loadLibrary("NativeImageProcessor")
     }
@@ -53,16 +74,18 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     private var originalImage : Bitmap?= null
     private lateinit var filteredImage:Bitmap
     internal lateinit var finalImage:Bitmap
-    private lateinit var image_preview: ImageView
+    private lateinit var image_preview: PhotoEditorView
 
     private lateinit var filterListFragment: FilterListFragment
-    private lateinit var editImageFragment: EditImageFragment
+    internal lateinit var editImageFragment: EditImageFragment
+    private lateinit var iconFragment: IconFragment
 
     private var brightnessFinal = 0
     private var saturationFinal = 1.0f
     private var constrantFinal = 1.0f
 
     internal var imageUri:Uri? =null
+    lateinit var dataUri: Uri
     internal val CAMERA_REQUEST: Int = 9999
 
     private var mSensorManager : SensorManager?= null
@@ -82,17 +105,27 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_suaanh)
         setSupportActionBar(toolbar)
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = "Filter"
+        firebaseStorage = FirebaseStorage.getInstance()
+        storageReference = FirebaseStorage.getInstance().getReference("updates")
+        databaseReference = FirebaseDatabase.getInstance().getReference("updates")
         image_preview = findViewById(R.id.image_preview)
+
         val a = intent.getBooleanExtra("a",false)
         if(a)
             openCamera()
         loadImage()
         setupViewPager(viewPager)
         tabs.setupWithViewPager(viewPager)
-
+        photoEditor = PhotoEditor.Builder(this,image_preview)
+            .setPinchTextScalable(true)
+            .setDefaultEmojiTypeface(Typeface.createFromAsset(assets,"emojione-android.ttf"))
+            .build()
         filterListFragment = FilterListFragment.getInstance(null)
+        editImageFragment = EditImageFragment.getInstance()
+        iconFragment = IconFragment.getInstance()
 
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         Objects.requireNonNull(mSensorManager)!!.registerListener(
@@ -102,16 +135,20 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         acceleration = 10f
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
+
+        btn_addicon.setOnClickListener {
+                iconFragment.setListener(this)
+                iconFragment.show(supportFragmentManager,iconFragment.tag)
+        }
     }
 
     private fun setupViewPager(viewPager: NonSwipeableViewPage?) {
         val adapter = ViewPagerAdapter(supportFragmentManager)
+            filterListFragment = FilterListFragment()
+            filterListFragment.setListener(this)
 
-        filterListFragment = FilterListFragment()
-        filterListFragment.setListener(this)
-
-        editImageFragment = EditImageFragment()
-        editImageFragment.setListener(this)
+            editImageFragment = EditImageFragment()
+            editImageFragment.setListener(this)
 
         adapter.addFragment(filterListFragment,"FILTERS")
         adapter.addFragment(editImageFragment,"EDIT")
@@ -124,19 +161,19 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         originalImage = BitmapUtils.getBitmapFromAssets(this,Main.IMAGE_NAME,200,300)
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
         finalImage  = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
-        image_preview.setImageBitmap(originalImage)
+        image_preview.source.setImageBitmap(originalImage)
     }
 
     override fun onFilterSelected(filter: Filter) {
         resetControl()
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
         Log.e("halo","ddaay")
-        image_preview.setImageBitmap(filter.processFilter(filteredImage))
+        image_preview.source.setImageBitmap(filter.processFilter(filteredImage))
         finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888,true)
     }
 
     private fun resetControl() {
-        editImageFragment.resetControl()
+//        editImageFragment.resetControl()
         brightnessFinal = 0
         constrantFinal = 1.0f
         saturationFinal = 1.0f
@@ -147,21 +184,21 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         val myFilter = Filter()
         Log.e("bri","ok")
         myFilter.addSubFilter(BrightnessSubFilter(brightness))
-        image_preview.setImageBitmap(myFilter.processFilter(finalImage.copy(Bitmap.Config.ARGB_8888,true)))
+        image_preview.source.setImageBitmap(myFilter.processFilter(finalImage.copy(Bitmap.Config.ARGB_8888,true)))
     }
 
     override fun onSaturationChanged(saturation: Float) {
         saturationFinal = saturation
         val myFilter = Filter()
         myFilter.addSubFilter(SaturationSubfilter(saturation))
-        image_preview.setImageBitmap(myFilter.processFilter(finalImage.copy(Bitmap.Config.ARGB_8888,true)))
+        image_preview.source.setImageBitmap(myFilter.processFilter(finalImage.copy(Bitmap.Config.ARGB_8888,true)))
     }
 
     override fun onConstrantChanged(constrant: Float) {
         constrantFinal = constrant
         val myFilter = Filter()
         myFilter.addSubFilter(ContrastSubFilter(constrant))
-        image_preview.setImageBitmap(myFilter.processFilter(finalImage.copy(Bitmap.Config.ARGB_8888,true)))
+        image_preview.source.setImageBitmap(myFilter.processFilter(finalImage.copy(Bitmap.Config.ARGB_8888,true)))
     }
 
     override fun onEditStarted() {
@@ -193,10 +230,11 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             }
         }
         if (id == R.id.action_open){
-            openImageFromGallery() // sau nhớ thay bằng mở từ firebase
+            openImageFromGallery()
             return true
         }else if (id == R.id.action_save){
-            saveImageFromGallery() // sau nhớ thay bằng lưu vào firebase
+            saveImageFromGallery()
+//            uploadFile()
             return true
         }else if (id == R.id.action_camera){
             openCamera()
@@ -245,19 +283,30 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     if (p0!!.areAllPermissionsGranted()){
-                        val path = BitmapUtils.insertImage(contentResolver,finalImage,
-                            System.currentTimeMillis().toString() + "_profile.jpg","")
-                        if (!TextUtils.isEmpty(path)){
-                            val snackBar = Snackbar.make(coordinator,"Image save to gallery",Snackbar.LENGTH_LONG)
-                                .setAction("OPEN") {
-                                    openImage(path)
+
+                        photoEditor.saveAsBitmap(object : OnSaveBitmap{
+                            override fun onBitmapReady(saveBitmap: Bitmap?) {
+                                val path = BitmapUtils.insertImage(contentResolver,saveBitmap,
+                                    System.currentTimeMillis().toString() + "_profile.jpg","")
+                                if (!TextUtils.isEmpty(path)){
+                                    val snackBar = Snackbar.make(coordinator,"Image save to gallery",Snackbar.LENGTH_LONG)
+                                        .setAction("OPEN") {
+                                            openImage(path)
+                                        }
+                                    snackBar.show()
                                 }
-                            snackBar.show()
-                        }
-                        else {
-                            val snackBar = Snackbar.make(coordinator,"Unable to save image",Snackbar.LENGTH_LONG)
-                            snackBar.show()
-                        }
+                                else {
+                                    val snackBar = Snackbar.make(coordinator,"Unable to save image",Snackbar.LENGTH_LONG)
+                                    snackBar.show()
+                                }
+                            }
+
+                            override fun onFailure(e: Exception?) {
+                                val snackBar = Snackbar.make(coordinator,e!!.message.toString(),Snackbar.LENGTH_LONG)
+                                snackBar.show()
+                            }
+
+                        })
                     }else
                         Toast.makeText(applicationContext,"Permission denied",Toast.LENGTH_SHORT).show()
                 }
@@ -305,6 +354,72 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             }).check()
     }
 
+    private fun writeNewAlbum(name: String, dataUri: String) {
+        val upload = Upload(name, dataUri)
+        alertWriteNote("mnote", name)
+        databaseReference?.child(name)?.setValue(upload)
+
+    }
+
+    private fun alertWriteNote(key: String, name: String) {
+
+        val alertDialog2 = AlertDialog.Builder(this)
+        alertDialog2.setTitle("Update Note")
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(50, 10, 10, 10)
+
+        val editText = EditText(this)
+        editText.hint = "Write something about this image"
+
+        linearLayout.addView(editText)
+        alertDialog2.setView(linearLayout)
+        alertDialog2.setPositiveButton("Update") { dialog, which ->
+            val value = editText.text.toString().trim { it <= ' ' }
+            val result = java.util.HashMap<String, Any>()
+            result[key] = value
+            databaseReference!!.child(name).updateChildren(result)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Updated Note", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
+            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
+                .show()
+            dialog.cancel()
+        }
+        alertDialog2.create().show()
+    }
+
+
+//    fun uploadFile() {
+//        val pd = ProgressDialog(this)
+//        pd.setTitle("Uploading")
+//        pd.show()
+//        val fileRef = storageReference?.child("update/" + UUID.randomUUID().toString())
+//
+//        fileRef?.putFile(dataUri)
+//            ?.addOnSuccessListener { p0 ->
+//                pd.dismiss()
+//                Toast.makeText(this, "Image Uploaded", Toast.LENGTH_SHORT).show()
+//                writeNewAlbum(name_album.text.toString().trim(), fileRef.downloadUrl.toString())
+//
+//            }
+//            ?.addOnFailureListener { p0 ->
+//                pd.dismiss()
+//                Toast.makeText(this, p0.message, Toast.LENGTH_SHORT).show()
+//            }
+//            ?.addOnProgressListener { p0 ->
+//                val progress: Double = (100.0 * p0.bytesTransferred) / p0.totalByteCount
+//                pd.setMessage("Upload ${progress.toInt()}%")
+//            }
+//    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == SELECT_GALLERY_PERMISSION){
@@ -318,7 +433,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
             finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888,true)
 
-            image_preview.setImageBitmap(originalImage)
+            image_preview.source.setImageBitmap(originalImage)
             bitmap?.recycle()
 
             filterListFragment.displayImage(originalImage)
@@ -334,7 +449,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888,true)
             finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888,true)
 
-            image_preview.setImageBitmap(originalImage)
+            image_preview.source.setImageBitmap(originalImage)
             bitmap?.recycle()
             filterListFragment = FilterListFragment.getInstance(originalImage)
             filterListFragment.setListener(this)
@@ -354,7 +469,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             acceleration = acceleration * 0.9f + delta
             if (acceleration > 12) {
 
-                var now : Long = System.currentTimeMillis();
+                val now : Long = System.currentTimeMillis();
                 // ignore shake events too close to each other (500ms)
                 var mShakeTimestamp: Long? = null
                 if (mShakeTimestamp != null) {
@@ -377,6 +492,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         }
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
     }
+
     override fun onResume() {
         super.onResume()
         // Add the following line to register the Session Manager Listener onResume
@@ -392,11 +508,16 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         mSensorManager?.unregisterListener(sensorListener)
         super.onPause()
     }
+
     fun Round(Rval: Float, Rpl: Int): Float {
         var Rval = Rval
-        val p = Math.pow(10.0, Rpl.toDouble()).toFloat()
-        Rval = Rval * p
-        val tmp = Math.round(Rval).toFloat()
+        val p = 10.0.pow(Rpl.toDouble()).toFloat()
+        Rval *= p
+        val tmp = Rval.roundToInt().toFloat()
         return tmp / p
+    }
+
+    override fun onIconItemSelected(icon: String) {
+        photoEditor.addEmoji(icon)
     }
 }

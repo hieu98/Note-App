@@ -44,6 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+
     <LinearLayout
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
@@ -59,6 +60,20 @@
             android:id="@+id/seekbar_saturatation"
             android:layout_weight="1"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_addtext"
+            android:background="@drawable/button_2"
+            android:textAllCaps="false"
+            android:text="Text"
+            android:layout_marginRight="20dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
