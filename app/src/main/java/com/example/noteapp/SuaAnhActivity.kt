@@ -139,6 +139,9 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                 iconFragment.setListener(this)
                 iconFragment.show(supportFragmentManager,iconFragment.tag)
         }
+        btn_addtext.setOnClickListener {
+
+        }
     }
 
     private fun setupViewPager(viewPager: NonSwipeableViewPage?) {
@@ -434,8 +437,8 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
             image_preview.source.setImageBitmap(originalImage)
             bitmap?.recycle()
-
-            filterListFragment.displayImage(originalImage)
+            filterListFragment = FilterListFragment.getInstance(originalImage)
+            filterListFragment.setListener(this)
 
         }else if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST){
             val bitmap = BitmapUtils.getBitmapFromGallery(this,imageUri!!,600,800)
