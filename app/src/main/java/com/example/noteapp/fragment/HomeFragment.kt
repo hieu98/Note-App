@@ -37,7 +37,7 @@ class HomeFragment() : Fragment() {
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("The Album")
-        recyclerView = view.findViewById(R.id.recycler)
+        recyclerView = view.findViewById(R.id.recycler_home)
         recyclerView.hasFixedSize()
 //        recyclerView.layoutManager(LinearLayoutManager(this))
 

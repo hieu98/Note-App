@@ -22,7 +22,6 @@
         <activity
             android:name=".SuaAnhActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
-        <activity android:name=".ChupAnhActivity" />
         <activity android:name=".activity.MainActivity" />
         <activity
             android:name=".activity.Login"
@@ -38,7 +37,6 @@
         <activity
             android:name=".activity.SignUp"
             android:theme="@style/LogInAndLogUpPage" />
->>>>>>> 751403aabfb37078c196856c5df66e130363c9bd
     </application>
 
 </manifest>

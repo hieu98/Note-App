@@ -12,8 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import com.example.noteapp.activity.Login
 import com.example.noteapp.R
+import com.example.noteapp.activity.Login
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -43,8 +43,8 @@ class UserFragment() : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("Users")
-        AlbumRef = mDatabase!!.reference!!.child("Users")
+        mDatabaseReference = mDatabase!!.reference.child("Users")
+        AlbumRef = mDatabase!!.reference.child("Users")
 
         val imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
         val tvName = view.findViewById<TextView>(R.id.tv_user_name)
@@ -61,7 +61,7 @@ class UserFragment() : Fragment() {
                 tvEmail!!.text = "" + snapshot!!.child("Email").value
                 tvPhone.text = "" + snapshot!!.child("Phone Number").value
 
-                val message: String = "" + snapshot!!.child("The Album").child("User Avatar").value
+                val message: String = "" + snapshot.child("The Album").child("User Avatar").value
                 Picasso.get().load(message).into(imgAvatar)
             }
 
@@ -71,8 +71,8 @@ class UserFragment() : Fragment() {
         val mAlbumReference = AlbumRef!!.child(fbUser!!.uid).child("The Album")
         mAlbumReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var countAlbums: Int = snapshot.childrenCount.toInt()
-                tvAlbum.text = countAlbums.toString()
+                val countAlbums: Int = snapshot.childrenCount.toInt()
+                tvAlbum.text = (countAlbums - 1).toString()
 
 
 //                var countImage: Int = 0
@@ -101,11 +101,11 @@ class UserFragment() : Fragment() {
         val btLogOut = view.findViewById<Button>(R.id.bt_logOut) as Button
         btLogOut.setOnClickListener { alertsignout() }
 
-        var edtName = view!!.findViewById<TextView>(R.id.tv_user_name)
+        val edtName = view.findViewById<TextView>(R.id.tv_user_name)
         edtName!!.setOnClickListener(View.OnClickListener {
             alertEditName("Name")
         })
-        var edtPhone  = view!!.findViewById<TextView>(R.id.tv_user_phone)
+        val edtPhone  = view.findViewById<TextView>(R.id.tv_user_phone)
         edtPhone!!.setOnClickListener(View.OnClickListener {
             alertEditPhone("Phone Number")
         })

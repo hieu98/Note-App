@@ -1,10 +1,13 @@
 package com.example.noteapp
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -17,18 +20,27 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageView
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
+import com.example.noteapp.Interface.IconFragmentListener
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
-import com.example.noteapp.adapater.ViewPagerAdapter
+import com.example.noteapp.adapter.ViewPagerAdapter
 import com.example.noteapp.fragment.EditImageFragment
 import com.example.noteapp.fragment.FilterListFragment
+import com.example.noteapp.fragment.IconFragment
+import com.example.noteapp.model.Image
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -38,58 +50,88 @@ import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.imageprocessors.subfilters.BrightnessSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.ContrastSubFilter
 import com.zomato.photofilters.imageprocessors.subfilters.SaturationSubfilter
+import ja.burhanrashid52.photoeditor.OnSaveBitmap
+import ja.burhanrashid52.photoeditor.PhotoEditor
+import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.lang.Math.sqrt
 import java.util.*
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
-class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImageFragmentListener {
+class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImageFragmentListener,
+    IconFragmentListener {
     val SELECT_GALLERY_PERMISSION = 1000
+    private val PICK_IMAGE_REQUEST = 111
+    private var firebaseStorage: FirebaseStorage? = null
+    private var storageReference: StorageReference? = null
+    private var databaseReference: DatabaseReference? = null
+    private var mAuth: FirebaseAuth? = null
+    private var fbUser: FirebaseUser? = null
+    lateinit var photoEditor: PhotoEditor
 
     init {
         System.loadLibrary("NativeImageProcessor")
     }
 
-    private var originalImage : Bitmap?= null
-    private lateinit var filteredImage:Bitmap
-    internal lateinit var finalImage:Bitmap
-    private lateinit var image_preview: ImageView
+    private var originalImage: Bitmap? = null
+    private lateinit var filteredImage: Bitmap
+    internal lateinit var finalImage: Bitmap
+    private lateinit var image_preview: PhotoEditorView
 
     private lateinit var filterListFragment: FilterListFragment
-    private lateinit var editImageFragment: EditImageFragment
+    internal lateinit var editImageFragment: EditImageFragment
+    private lateinit var iconFragment: IconFragment
 
     private var brightnessFinal = 0
     private var saturationFinal = 1.0f
     private var constrantFinal = 1.0f
 
-    internal var imageUri:Uri? =null
+    internal var imageUri: Uri? = null
     internal val CAMERA_REQUEST: Int = 9999
 
-    private var mSensorManager : SensorManager?= null
+    private var mSensorManager: SensorManager? = null
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
 
-    private val SHAKE_SLOP_TIME_MS = 100000
+    private val SHAKE_SLOP_TIME_MS = 999999
 
     object Main {
         val IMAGE_NAME = "flash.jpg"
 
     }
+
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_suaanh)
         setSupportActionBar(toolbar)
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = "Filter"
+        mAuth = FirebaseAuth.getInstance()
+        fbUser = mAuth!!.currentUser
+        firebaseStorage = FirebaseStorage.getInstance()
+        storageReference = FirebaseStorage.getInstance().getReference(fbUser!!.uid)
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users")
+//        databaseReference = FirebaseDatabase.getInstance().getReference("updates")
         image_preview = findViewById(R.id.image_preview)
-        openCamera()
+
+        val a = intent.getBooleanExtra("a", false)
+        if (a)
+            openCamera()
         loadImage()
         setupViewPager(viewPager)
         tabs.setupWithViewPager(viewPager)
-
+        photoEditor = PhotoEditor.Builder(this, image_preview)
+            .setPinchTextScalable(true)
+            .setDefaultEmojiTypeface(Typeface.createFromAsset(assets, "emojione-android.ttf"))
+            .build()
         filterListFragment = FilterListFragment.getInstance(null)
+        editImageFragment = EditImageFragment.getInstance()
+        iconFragment = IconFragment.getInstance()
 
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         Objects.requireNonNull(mSensorManager)!!.registerListener(
@@ -99,11 +141,16 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         acceleration = 10f
         currentAcceleration = SensorManager.GRAVITY_EARTH
         lastAcceleration = SensorManager.GRAVITY_EARTH
+
+        btn_addicon.setOnClickListener {
+            iconFragment.setListener(this)
+            iconFragment.show(supportFragmentManager, iconFragment.tag)
+        }
+
     }
 
     private fun setupViewPager(viewPager: NonSwipeableViewPage?) {
         val adapter = ViewPagerAdapter(supportFragmentManager)
-
         filterListFragment = FilterListFragment()
         filterListFragment.setListener(this)
 
@@ -118,22 +165,22 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     }
 
     private fun loadImage() {
-        originalImage = BitmapUtils.getBitmapFromAssets(this, Main.IMAGE_NAME, 300, 300)
+        originalImage = BitmapUtils.getBitmapFromAssets(this, Main.IMAGE_NAME, 200, 300)
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
-        finalImage  = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
-        image_preview.setImageBitmap(originalImage)
+        finalImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
+        image_preview.source.setImageBitmap(originalImage)
     }
 
     override fun onFilterSelected(filter: Filter) {
         resetControl()
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
         Log.e("halo", "ddaay")
-        image_preview.setImageBitmap(filter.processFilter(filteredImage))
+        image_preview.source.setImageBitmap(filter.processFilter(filteredImage))
         finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
     }
 
     private fun resetControl() {
-        editImageFragment.resetControl()
+//        editImageFragment.resetControl()
         brightnessFinal = 0
         constrantFinal = 1.0f
         saturationFinal = 1.0f
@@ -144,7 +191,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         val myFilter = Filter()
         Log.e("bri", "ok")
         myFilter.addSubFilter(BrightnessSubFilter(brightness))
-        image_preview.setImageBitmap(
+        image_preview.source.setImageBitmap(
             myFilter.processFilter(
                 finalImage.copy(
                     Bitmap.Config.ARGB_8888,
@@ -158,7 +205,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         saturationFinal = saturation
         val myFilter = Filter()
         myFilter.addSubFilter(SaturationSubfilter(saturation))
-        image_preview.setImageBitmap(
+        image_preview.source.setImageBitmap(
             myFilter.processFilter(
                 finalImage.copy(
                     Bitmap.Config.ARGB_8888,
@@ -172,7 +219,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         constrantFinal = constrant
         val myFilter = Filter()
         myFilter.addSubFilter(ContrastSubFilter(constrant))
-        image_preview.setImageBitmap(
+        image_preview.source.setImageBitmap(
             myFilter.processFilter(
                 finalImage.copy(
                     Bitmap.Config.ARGB_8888,
@@ -210,13 +257,14 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             else -> {
             }
         }
-        if (id == R.id.action_open){
-            openImageFromGallery() // sau nhớ thay bằng mở từ firebase
+        if (id == R.id.action_open) {
+            openImageFromGallery()
             return true
-        }else if (id == R.id.action_save){
-            saveImageFromGallery() // sau nhớ thay bằng lưu vào firebase
+        } else if (id == R.id.action_save) {
+            saveImageFromGallery()
+            uploadFileImage()
             return true
-        }else if (id == R.id.action_camera){
+        } else if (id == R.id.action_camera) {
             openCamera()
             return true
         }
@@ -267,28 +315,43 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     if (p0!!.areAllPermissionsGranted()) {
-                        val path = BitmapUtils.insertImage(
-                            contentResolver, finalImage,
-                            System.currentTimeMillis().toString() + "_profile.jpg", ""
-                        )
-                        if (!TextUtils.isEmpty(path)) {
-                            val snackBar = Snackbar.make(
-                                coordinator,
-                                "Image save to gallery",
-                                Snackbar.LENGTH_LONG
-                            )
-                                .setAction("OPEN") {
-                                    openImage(path)
+
+                        photoEditor.saveAsBitmap(object : OnSaveBitmap {
+                            override fun onBitmapReady(saveBitmap: Bitmap?) {
+                                val path = BitmapUtils.insertImage(
+                                    contentResolver, saveBitmap,
+                                    System.currentTimeMillis().toString() + "_profile.jpg", ""
+                                )
+                                if (!TextUtils.isEmpty(path)) {
+                                    val snackBar = Snackbar.make(
+                                        coordinator,
+                                        "Image save to gallery",
+                                        Snackbar.LENGTH_LONG
+                                    )
+                                        .setAction("OPEN") {
+                                            openImage(path)
+                                        }
+                                    snackBar.show()
+                                } else {
+                                    val snackBar = Snackbar.make(
+                                        coordinator,
+                                        "Unable to save image",
+                                        Snackbar.LENGTH_LONG
+                                    )
+                                    snackBar.show()
                                 }
-                            snackBar.show()
-                        } else {
-                            val snackBar = Snackbar.make(
-                                coordinator,
-                                "Unable to save image",
-                                Snackbar.LENGTH_LONG
-                            )
-                            snackBar.show()
-                        }
+                            }
+
+                            override fun onFailure(e: Exception?) {
+                                val snackBar = Snackbar.make(
+                                    coordinator,
+                                    e!!.message.toString(),
+                                    Snackbar.LENGTH_LONG
+                                )
+                                snackBar.show()
+                            }
+
+                        })
                     } else
                         Toast.makeText(applicationContext, "Permission denied", Toast.LENGTH_SHORT)
                             .show()
@@ -338,98 +401,184 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             }).check()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == SELECT_GALLERY_PERMISSION){
-            val bitmap = BitmapUtils.getBitmapFromGallery(this, data?.data!!, 800, 800)
+    private fun writeNewFileImage(name: String, mUri: String) {
+        val mImage = Image(name, mUri)
+        alertWriteNote("note", name)
+        val userId = mAuth!!.currentUser!!.uid
+        val currentUserDb = databaseReference!!.child(userId).child("The Album").child("Total")
+        currentUserDb.child(name)?.setValue(mImage)
+    }
 
-            originalImage!!.recycle()
-            filteredImage.recycle()
-            finalImage.recycle()
+    private fun alertWriteNote(key: String, name: String) {
 
-            originalImage= bitmap?.copy(Bitmap.Config.ARGB_8888, true)
-            filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
-            finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
+        val alertDialog2 = AlertDialog.Builder(this)
+        alertDialog2.setTitle("Update Note")
 
-            image_preview.setImageBitmap(originalImage)
-            bitmap?.recycle()
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(50, 10, 10, 10)
 
-            filterListFragment.displayImage(originalImage)
+        val editText = EditText(this)
+        editText.hint = "Write something about this image"
 
-        }else if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST){
-            val bitmap = BitmapUtils.getBitmapFromGallery(this, imageUri!!, 800, 800)
+        linearLayout.addView(editText)
+        alertDialog2.setView(linearLayout)
+        alertDialog2.setPositiveButton("Update") { dialog, which ->
+            val value = editText.text.toString().trim { it <= ' ' }
+            val result = java.util.HashMap<String, Any>()
+            result[key] = value
+            val userId = mAuth!!.currentUser!!.uid
+            val currentUserDb = databaseReference!!.child(userId).child("The Album")
+            currentUserDb!!.child(name).updateChildren(result)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Updated Note", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()
+                }
+        }
 
-            originalImage!!.recycle()
-            filteredImage.recycle()
-            finalImage.recycle()
+        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
+            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
+                .show()
+            dialog.cancel()
+        }
+        alertDialog2.create().show()
+    }
 
-            originalImage= bitmap?.copy(Bitmap.Config.ARGB_8888, true)
-            filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
-            finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
+    fun uploadFileImage() {
+        if (imageUri != null) {
+            val pd = ProgressDialog(this)
+            pd.setTitle("Uploading")
+            pd.show()
 
-            image_preview.setImageBitmap(originalImage)
-            bitmap?.recycle()
-            filterListFragment = FilterListFragment.getInstance(originalImage)
-            filterListFragment.setListener(this)
+            val calendar = Calendar.getInstance()
+            val userId = mAuth!!.currentUser!!.uid
+            val currentUserDb = databaseReference!!.child(userId)
+
+
+                val fileRef = storageReference?.child("imagetotal/" + UUID.randomUUID().toString())
+
+                fileRef?.putFile(imageUri!!)
+                    ?.addOnSuccessListener { p0 ->
+                        pd.dismiss()
+                        Toast.makeText(this, "Image Uploaded", Toast.LENGTH_SHORT).show()
+                        writeNewFileImage("IMG" + calendar.timeInMillis, fileRef.downloadUrl.toString())
+                    }
+                    ?.addOnFailureListener { p0 ->
+                        pd.dismiss()
+                        Toast.makeText(this, p0.message, Toast.LENGTH_SHORT).show()
+                    }
+                    ?.addOnProgressListener { p0 ->
+                        val progress: Double = (100.0 * p0.bytesTransferred) / p0.totalByteCount
+                        pd.setMessage("Upload ${progress.toInt()}%")
+                    }
+
         }
     }
 
-    private val sensorListener: SensorEventListener = object : SensorEventListener {
-        override fun onSensorChanged(event: SensorEvent) {
-            val x = event.values[0]
-            val y = event.values[1]
-            val z = event.values[2]
-            lastAcceleration = currentAcceleration
-            currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-            val delta: Float = currentAcceleration - lastAcceleration
-            acceleration = acceleration * 0.9f + delta
-            if (acceleration > 12) {
 
-                var now : Long = System.currentTimeMillis();
-                // ignore shake events too close to each other (500ms)
-                var mShakeTimestamp: Long? = null
-                if (mShakeTimestamp != null) {
-                    if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
-                        return;
-                    }
-                }
-                mShakeTimestamp = now
 
-                if (Round(x, 4)< -30.0000){
-                    val imageView = findViewById<ImageView>(R.id.image_preview)
-                    imageView.rotation = imageView.rotation - 90
-                    Toast.makeText(applicationContext, "Rotate Right", Toast.LENGTH_SHORT).show()
-                }else if (Round(x, 4)>30.0000) {
-                    val imageView = findViewById<ImageView>(R.id.image_preview)
-                    imageView.rotation = imageView.rotation + 90
-                    Toast.makeText(applicationContext, "Rotate Left", Toast.LENGTH_SHORT).show()
-                }
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+            if (resultCode == Activity.RESULT_OK && requestCode == SELECT_GALLERY_PERMISSION) {
+                val bitmap = BitmapUtils.getBitmapFromGallery(this, data?.data!!, 600, 800)
+
+                originalImage!!.recycle()
+                filteredImage.recycle()
+                finalImage.recycle()
+
+                originalImage = bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+                filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
+                finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
+
+                image_preview.source.setImageBitmap(originalImage)
+                bitmap?.recycle()
+
+                filterListFragment.displayImage(originalImage)
+
+            } else if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST) {
+                val bitmap = BitmapUtils.getBitmapFromGallery(this, imageUri!!, 600, 800)
+
+                originalImage!!.recycle()
+                filteredImage.recycle()
+                finalImage.recycle()
+
+                originalImage = bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+                filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
+                finalImage = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
+
+                image_preview.source.setImageBitmap(originalImage)
+                bitmap?.recycle()
+                filterListFragment = FilterListFragment.getInstance(originalImage)
+                filterListFragment.setListener(this)
             }
         }
-        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
-    }
-    override fun onResume() {
-        super.onResume()
-        // Add the following line to register the Session Manager Listener onResume
-        mSensorManager?.registerListener(
-            sensorListener, mSensorManager!!.getDefaultSensor(
-                Sensor.TYPE_ACCELEROMETER
-            ), SensorManager.SENSOR_DELAY_NORMAL
-        )
+
+        private val sensorListener: SensorEventListener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                val x = event.values[0]
+                val y = event.values[1]
+                val z = event.values[2]
+                lastAcceleration = currentAcceleration
+                currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+                val delta: Float = currentAcceleration - lastAcceleration
+                acceleration = acceleration * 0.9f + delta
+                if (acceleration > 12) {
+
+                    val now: Long = System.currentTimeMillis();
+                    // ignore shake events too close to each other (500ms)
+                    var mShakeTimestamp: Long? = null
+                    if (mShakeTimestamp != null) {
+                        if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
+                            return;
+                        }
+                    }
+                    mShakeTimestamp = now
+
+                    if (Round(x, 4) < -30.0000) {
+                        val imageView = findViewById<PhotoEditorView>(R.id.image_preview)
+                        imageView.rotation = imageView.rotation - 90
+                        Toast.makeText(applicationContext, "Rotate Right", Toast.LENGTH_SHORT)
+                            .show()
+                    } else if (Round(x, 4) > 30.0000) {
+                        val imageView = findViewById<PhotoEditorView>(R.id.image_preview)
+                        imageView.rotation = imageView.rotation + 90
+                        Toast.makeText(applicationContext, "Rotate Left", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+        }
+
+        override fun onResume() {
+            super.onResume()
+            // Add the following line to register the Session Manager Listener onResume
+            mSensorManager?.registerListener(
+                sensorListener, mSensorManager!!.getDefaultSensor(
+                    Sensor.TYPE_ACCELEROMETER
+                ), SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }
+
+        override fun onPause() {
+            // Add the following line to unregister the Sensor Manager onPause
+            mSensorManager?.unregisterListener(sensorListener)
+            super.onPause()
+        }
+
+        //Làm tròn x
+        fun Round(Rval: Float, Rpl: Int): Float {
+            var Rval = Rval
+            val p = 10.0.pow(Rpl.toDouble()).toFloat()
+            Rval *= p
+            val tmp = Rval.roundToInt().toFloat()
+            return tmp / p
+        }
+
+        override fun onIconItemSelected(icon: String) {
+            photoEditor.addEmoji(icon)
+        }
     }
 
-    override fun onPause() {
-        // Add the following line to unregister the Sensor Manager onPause
-        mSensorManager?.unregisterListener(sensorListener)
-        super.onPause()
-    }
-
-    //Làm tròn x
-    fun Round(Rval: Float, Rpl: Int): Float {
-        var Rval = Rval
-        val p = Math.pow(10.0, Rpl.toDouble()).toFloat()
-        Rval = Rval * p
-        val tmp = Math.round(Rval).toFloat()
-        return tmp / p
-    }
-}

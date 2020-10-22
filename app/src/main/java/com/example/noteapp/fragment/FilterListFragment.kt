@@ -15,7 +15,7 @@ import com.example.noteapp.R
 import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.SpaceItemDecoration
-import com.example.noteapp.adapater.ThumbnailAdapter
+import com.example.noteapp.adapter.ThumbnailAdapter
 import com.zomato.photofilters.FilterPack
 import com.zomato.photofilters.imageprocessors.Filter
 import com.zomato.photofilters.utils.ThumbnailItem

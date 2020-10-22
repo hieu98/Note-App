@@ -21,7 +21,21 @@
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/btn_addicon"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/background_login"
+            android:paddingLeft="15dp"
+            android:drawableLeft="@drawable/ic_baseline_insert_emoticon_24"
+            android:textAllCaps="false" />
 
-    <include layout="@layout/content_main"/>
+        <include layout="@layout/content_main"/>
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
