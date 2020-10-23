@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.noteapp.R
 import io.github.rockerhieu.emojicon.EmojiconTextView
@@ -17,6 +18,7 @@ class IconAdapter (private val context: Context, private val iconItemList:List<S
         init {
             itemView.setOnClickListener {
                 listener.onIconItemSelected(iconItemList[adapterPosition])
+                Toast.makeText(context,"Đã thêm icon",Toast.LENGTH_SHORT).show()
             }
         }
     }

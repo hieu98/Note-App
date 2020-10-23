@@ -72,7 +72,7 @@ class UserFragment() : Fragment() {
         mAlbumReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val countAlbums: Int = snapshot.childrenCount.toInt()
-                tvAlbum.text = countAlbums.toString()
+                tvAlbum.text = (countAlbums - 1).toString()
 
 
 //                var countImage: Int = 0
@@ -220,7 +220,3 @@ class UserFragment() : Fragment() {
     }
 
 }
-
-
-
-
