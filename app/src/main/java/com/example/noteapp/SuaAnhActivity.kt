@@ -40,7 +40,8 @@ import com.example.noteapp.model.Image
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
@@ -441,9 +442,11 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             currentUserDb!!.child(name).updateChildren(result)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Updated Note", Toast.LENGTH_SHORT).show()
+                    onBackPressed()
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()
+                    onBackPressed()
                 }
         }
 
@@ -451,6 +454,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
                 .show()
             dialog.cancel()
+            onBackPressed()
         }
         alertDialog2.create().show()
     }

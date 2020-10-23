@@ -6,10 +6,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.Sensor.accelermeter"
-        android:required="true"/>
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -18,14 +20,13 @@
         android:roundIcon="@mipmap/my_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".activity.ListImageActivity"></activity>
         <activity
             android:name=".SuaAnhActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity android:name=".activity.MainActivity" />
         <activity
             android:name=".activity.Login"
-
             android:theme="@style/LogInAndLogUpPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.SignUp"
             android:theme="@style/LogInAndLogUpPage" />
