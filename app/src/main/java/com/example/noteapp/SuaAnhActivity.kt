@@ -272,7 +272,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         } else if (id == R.id.action_save) {
             saveImageFromGallery()
             uploadFileImage()
-
             return true
         } else if (id == R.id.action_camera) {
             openCamera()
@@ -468,8 +467,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             val calendar = Calendar.getInstance()
             val userId = mAuth!!.currentUser!!.uid
             val currentUserDb = databaseReference!!.child(userId)
-
-
             val fileRef = storageReference?.child("imagetotal/" + UUID.randomUUID().toString())
 
             fileRef?.putFile(imageUri!!)

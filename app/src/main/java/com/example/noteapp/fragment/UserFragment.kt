@@ -53,7 +53,6 @@ class UserFragment() : Fragment() {
         val tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
         var tvImage = view.findViewById<TextView>(R.id.tv_num_image)
 
-
         val mUserReference = mDatabaseReference!!.child(fbUser!!.uid)
         mUserReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -64,7 +63,6 @@ class UserFragment() : Fragment() {
                 val message: String = "" + snapshot.child("The Album").child("User Avatar").value
                 Picasso.get().load(message).into(imgAvatar)
             }
-
             override fun onCancelled(error: DatabaseError) {}
         })
 
@@ -73,8 +71,6 @@ class UserFragment() : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val countAlbums: Int = snapshot.childrenCount.toInt()
                 tvAlbum.text = (countAlbums - 1).toString()
-
-
 //                var countImage: Int = 0
 //                for (ds in snapshot.children) {
 //                    var map : Map<String, Object> = ds.value as (Map<String, Object>)
@@ -86,7 +82,6 @@ class UserFragment() : Fragment() {
 //                    tvImage.text = countImage.toString()
 //                }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }

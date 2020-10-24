@@ -69,6 +69,10 @@ class HomeFragment() : Fragment(),AlbumAdapter.AlbumAdapterListener {
         }
     }
 
+    fun getAlbumList(){
+        
+    }
+
     override fun onAlbumItemSelected(album: Album) {
         albumSelect = album
         tenalbum = albumSelect!!.nameab
