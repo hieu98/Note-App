@@ -5,16 +5,15 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,6 +22,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -103,13 +103,18 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     internal var imageUri: Uri? = null
     internal val CAMERA_REQUEST: Int = 9999
 
+//Shake Sensor Part
     private var mSensorManager: SensorManager? = null
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
-
     private val SHAKE_SLOP_TIME_MS = 999999
     private val SHAKE_COUNT_RESET_TIME_MS = 5000
+//
+//Choose List Album part
+    var album = arrayOf("Friday", "Monday", "Total")
+
+
 
     object Main {
         val IMAGE_NAME = "flash.jpg"
@@ -338,7 +343,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                         photoEditor.saveAsBitmap(object : OnSaveBitmap {
                             override fun onBitmapReady(saveBitmap: Bitmap?) {
                                 val pd = ProgressDialog(this@SuaAnhActivity)
-                                pd.setTitle("Uploading")
+                                pd.setTitle("Get ready")
                                 pd.show()
 
                                 val path = BitmapUtils.insertImage(
@@ -347,6 +352,8 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                                     System.currentTimeMillis().toString() + "_profile.jpg",
                                     ""
                                 )
+
+
                                 val calendar = Calendar.getInstance()
                                 val fileRef = storageReference?.child(
                                     "imagetotal/" + UUID.randomUUID().toString()
@@ -387,7 +394,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                                     .addOnProgressListener { p0 ->
                                         val progress: Double =
                                             (100.0 * p0.bytesTransferred) / p0.totalByteCount
-                                        pd.setMessage("Upload ${progress.toInt()}%")
+                                        pd.setMessage("Loading đến ${progress.toInt()}%")
                                     }
                                 if (!TextUtils.isEmpty(path)) {
                                     val snackBar = Snackbar.make(
@@ -466,15 +473,11 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             }).check()
     }
 
-    private fun writeNewFileImage(name: String, mUri: String) {
-        val mImage = Image(name, mUri)
-        alertWriteNote("note", name)
-        val userId = mAuth!!.currentUser!!.uid
-        val currentUserDb = databaseReference!!.child(userId).child("The Album").child("Total")
-        currentUserDb.child(name)?.setValue(mImage)
+    private fun writeNewFileImage(mName: String, mUri: String) {
+        alertChooseAlbumSave(mName, mUri)
     }
 
-    private fun alertWriteNote(key: String, name: String) {
+    private fun alertWriteNote(key: String, name: String,location : String) {
 
         val alertDialog2 = AlertDialog.Builder(this)
         alertDialog2.setTitle("Update Note")
@@ -493,7 +496,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             val result = java.util.HashMap<String, Any>()
             result[key] = value
             val userId = mAuth!!.currentUser!!.uid
-            val currentUserDb = databaseReference!!.child(userId).child("The Album").child("Total")
+            val currentUserDb = databaseReference!!.child(userId).child("The Album").child(location)
             currentUserDb!!.child(name).updateChildren(result)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Updated Note", Toast.LENGTH_SHORT).show()
@@ -512,6 +515,24 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             onBackPressed()
         }
         alertDialog2.create().show()
+    }
+
+    private fun alertChooseAlbumSave(name: String, uri: String){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Choose Album You Wanna Save")
+
+        val dataAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, album)
+        builder.setAdapter(dataAdapter, object : DialogInterface.OnClickListener {
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                alertWriteNote("note", name, album[which])
+                val userId = mAuth!!.currentUser!!.uid
+                val currentUserDb = databaseReference!!.child(userId).child("The Album").child(album[which])
+                currentUserDb.child(name)?.setValue(Image(name,uri, album[which]))
+                Toast.makeText(this@SuaAnhActivity, "You have selected " + album[which], Toast.LENGTH_LONG).show()
+            }
+        })
+        val dialog = builder.create()
+        dialog.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -646,7 +667,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         val tmp = Rval.roundToInt().toFloat()
         return tmp / p
     }
-    
+
 
     //Xoay bitmap
     fun Bitmap.rotate(angle: Float = 0F): Bitmap? {

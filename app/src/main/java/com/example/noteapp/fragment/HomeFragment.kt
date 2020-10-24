@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.noteapp.Interface.AlbumListener
@@ -14,8 +15,7 @@ import com.example.noteapp.adapter.AlbumAdapter
 import com.example.noteapp.model.Album
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.item_recyclehome.*
 
 
@@ -52,7 +52,7 @@ class HomeFragment() : Fragment(),AlbumAdapter.AlbumAdapterListener {
         mAuth = FirebaseAuth.getInstance()
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("The Album")
+        mDatabaseReference = mDatabase!!.reference!!.child(fbUser!!.uid).child("The Album")
 
 //        albumAdapter = AlbumAdapter(context!!,albumList!!,this)
 //        recycler_home.layoutManager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
@@ -68,13 +68,16 @@ class HomeFragment() : Fragment(),AlbumAdapter.AlbumAdapterListener {
             return HomeFragment()
         }
     }
+    fun getAlbumList(){
+
+    }
 
     override fun onAlbumItemSelected(album: Album) {
         albumSelect = album
         tenalbum = albumSelect!!.nameab
         img_album.setOnClickListener {
             val intent = Intent(context, ListImageActivity::class.java)
-            intent.putExtra("ten album",tenalbum)
+            intent.putExtra("ten album", tenalbum)
             startActivity(intent)
         }
     }

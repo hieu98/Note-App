@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.noteapp.R
 import com.example.noteapp.model.Album
 
-class AlbumAdapter(private val context: Context, private val albumItemList:ArrayList<Album>,private val listener :AlbumAdapterListener):
-    RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder>() {
+class AlbumAdapter(private val context: Context, private val albumItemList:MutableList<Album>, private val listener:AlbumAdapterListener):
+    RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder>(){
 
     inner class AlbumViewHolder(itemview : View): RecyclerView.ViewHolder(itemview){
         internal val img_album = itemview.findViewById(R.id.img_album) as ImageView
         internal val txt_namealbum = itemview.findViewById<TextView>(R.id.txt_namealbum)
         internal val txt_notealbum = itemview.findViewById<TextView>(R.id.txt_notealbum)
+
         init {
             itemview.setOnClickListener {
                 listener.onAlbumItemSelected(albumItemList[adapterPosition])
@@ -42,6 +43,4 @@ class AlbumAdapter(private val context: Context, private val albumItemList:Array
     override fun getItemCount(): Int {
         return albumItemList.size
     }
-
-
 }

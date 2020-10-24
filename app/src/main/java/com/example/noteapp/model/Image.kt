@@ -6,5 +6,6 @@ import java.io.Serializable
 
 data class Image ( var name : String = "",
                    var uri : String = "",
+                   var locate : String = "",
                    var note : String = "")
 

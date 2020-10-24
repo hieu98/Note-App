@@ -84,7 +84,7 @@ class UserFragment() : Fragment() {
 //                    countImage += pValue
 //
 //                    tvImage.text = countImage.toString()
-//                }
+////                }
             }
 
             override fun onCancelled(error: DatabaseError) {
