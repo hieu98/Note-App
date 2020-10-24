@@ -147,6 +147,9 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             iconFragment.show(supportFragmentManager, iconFragment.tag)
         }
 
+        btn_addtext.setOnClickListener {
+
+        }
     }
 
     private fun setupViewPager(viewPager: NonSwipeableViewPage?) {
@@ -455,10 +458,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             val calendar = Calendar.getInstance()
             val userId = mAuth!!.currentUser!!.uid
             val currentUserDb = databaseReference!!.child(userId)
-
-
                 val fileRef = storageReference?.child("imagetotal/" + UUID.randomUUID().toString())
-
                 fileRef?.putFile(imageUri!!)
                     ?.addOnSuccessListener { p0 ->
                         pd.dismiss()

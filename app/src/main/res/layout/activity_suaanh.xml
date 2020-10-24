@@ -34,7 +34,15 @@
             android:paddingLeft="15dp"
             android:drawableLeft="@drawable/ic_baseline_insert_emoticon_24"
             android:textAllCaps="false" />
-
+        <Button
+            android:paddingLeft="15dp"
+            android:id="@+id/btn_addtext"
+            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/background_login"
+            android:drawableLeft="@drawable/ic_baseline_text_fields_24"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
         <include layout="@layout/content_main"/>
     </RelativeLayout>
 
