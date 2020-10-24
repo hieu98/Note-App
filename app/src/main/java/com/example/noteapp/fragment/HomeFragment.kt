@@ -52,8 +52,7 @@ class HomeFragment() : Fragment(),AlbumAdapter.AlbumAdapterListener {
         mAuth = FirebaseAuth.getInstance()
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("The Album")
-
+        mDatabaseReference = mDatabase!!.reference.child("The Album")
 //        albumAdapter = AlbumAdapter(context!!,albumList!!,this)
 //        recycler_home.layoutManager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
         recycler_home = view.findViewById(R.id.recycler_home)
