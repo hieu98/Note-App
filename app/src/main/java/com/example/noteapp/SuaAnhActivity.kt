@@ -531,8 +531,93 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                 Toast.makeText(this@SuaAnhActivity, "You have selected " + album[which], Toast.LENGTH_LONG).show()
             }
         })
+
+        builder.setPositiveButton("Add New Album") { dialog, which ->
+            alertCreateAlbumName("Name", name, uri)
+        }
         val dialog = builder.create()
         dialog.show()
+    }
+
+    private fun alertCreateAlbumName(key: String, mName: String, mUri: String) {
+
+        val alertDialog2 = AlertDialog.Builder(this)
+        alertDialog2.setTitle("Create New Album")
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(50, 10, 10, 10)
+
+        val editText1 = EditText(this)
+        editText1.hint = "Write Album $key"
+
+        linearLayout.addView(editText1)
+        alertDialog2.setView(linearLayout)
+        alertDialog2.setPositiveButton("Create") { dialog, which ->
+            val value = editText1.text.toString().trim { it <= ' ' }
+            val result = java.util.HashMap<String, Any>()
+            result[key] = value
+            val userId = mAuth!!.currentUser!!.uid
+            val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
+            currentUserDb!!.updateChildren(result)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
+//                    alertCreateAlbumNote("Note", value)
+
+                    alertWriteNote("note", mName, value)
+                    val userId = mAuth!!.currentUser!!.uid
+                    val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
+                    currentUserDb.child(mName)?.setValue(Image(mName,mUri, value))
+                    Toast.makeText(this@SuaAnhActivity, "You have selected" + value, Toast.LENGTH_LONG).show()
+                    alertCreateAlbumNote("Note", value)
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Created $key Failed ", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
+            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
+                .show()
+            dialog.cancel()
+        }
+        alertDialog2.create().show()
+    }
+    private fun alertCreateAlbumNote(key: String, name: String) {
+
+        val alertDialog2 = AlertDialog.Builder(this)
+        alertDialog2.setTitle("Create New Album")
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(50, 10, 10, 10)
+
+        val editText1 = EditText(this)
+        editText1.hint = "Write something about your album"
+
+        linearLayout.addView(editText1)
+        alertDialog2.setView(linearLayout)
+        alertDialog2.setPositiveButton("Create") { dialog, which ->
+            val value = editText1.text.toString().trim { it <= ' ' }
+            val result = java.util.HashMap<String, Any>()
+            result[key] = value
+            val userId = mAuth!!.currentUser!!.uid
+            val currentUserDb = databaseReference!!.child(userId).child("The Album")
+            currentUserDb!!.child(name).updateChildren(result)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Created $key Failed ", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
+            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
+                .show()
+            dialog.cancel()
+        }
+        alertDialog2.create().show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
