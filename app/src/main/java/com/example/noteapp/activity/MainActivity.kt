@@ -13,8 +13,6 @@ import com.example.noteapp.R
 import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.fragment.HomeFragment
 import com.example.noteapp.fragment.UserFragment
-import com.example.noteapp.model.Album
-import com.example.noteapp.model.Image
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -25,7 +23,6 @@ import com.luseen.spacenavigation.SpaceItem
 import com.luseen.spacenavigation.SpaceNavigationView
 import com.luseen.spacenavigation.SpaceOnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     val fragment1: Fragment = HomeFragment()

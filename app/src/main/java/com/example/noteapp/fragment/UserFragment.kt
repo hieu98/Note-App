@@ -220,7 +220,3 @@ class UserFragment() : Fragment() {
     }
 
 }
-
-
-
-

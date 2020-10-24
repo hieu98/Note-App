@@ -1,20 +1,36 @@
 package com.example.noteapp.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.noteapp.Interface.AlbumListener
 import com.example.noteapp.R
+import com.example.noteapp.activity.ListImageActivity
+import com.example.noteapp.adapter.AlbumAdapter
+import com.example.noteapp.model.Album
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.item_recyclehome.*
 
 
-class HomeFragment() : Fragment() {
-    lateinit var recyclerView :RecyclerView
+class HomeFragment() : Fragment(),AlbumAdapter.AlbumAdapterListener {
+    lateinit var recycler_home :RecyclerView
+    var albumSelect :Album?= null
+    var albumList: ArrayList<Album>?= null
+    var albumAdapter :AlbumAdapter?= null
+    var tenalbum:String? = null
+
+    internal var listener: AlbumListener? = null
+    fun setLintener(listener: AlbumListener){
+        this.listener= listener
+    }
+
     private var mDatabaseReference: DatabaseReference? = null
     private var mDatabase:FirebaseDatabase? = null
     private var mAuth:FirebaseAuth? = null
@@ -37,11 +53,12 @@ class HomeFragment() : Fragment() {
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("The Album")
-        recyclerView = view.findViewById(R.id.recycler_home)
-        recyclerView.hasFixedSize()
-//        recyclerView.layoutManager(LinearLayoutManager(this))
 
-//        logRecyclerView()
+//        albumAdapter = AlbumAdapter(context!!,albumList!!,this)
+//        recycler_home.layoutManager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
+        recycler_home = view.findViewById(R.id.recycler_home)
+        recycler_home.setHasFixedSize(true)
+
         return view
     }
 
@@ -51,24 +68,15 @@ class HomeFragment() : Fragment() {
             return HomeFragment()
         }
     }
-    class AlbumViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
 
+    override fun onAlbumItemSelected(album: Album) {
+        albumSelect = album
+        tenalbum = albumSelect!!.nameab
+        img_album.setOnClickListener {
+            val intent = Intent(context, ListImageActivity::class.java)
+            intent.putExtra("ten album",tenalbum)
+            startActivity(intent)
+        }
     }
-//    private fun logRecyclerView(){
-//        var FirebaseRecycleAdapater = object : FirebaseRecyclerAdapter<Album, AlbumViewHolder>(
-//
-//
-//
-//        ) {
-//            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumViewHolder {
-//
-//            }
-//
-//            override fun onBindViewHolder(p0: AlbumViewHolder, p1: Int, p2: Album) {
-//
-//            }
-//
-//        }
-//        recyclerView.adapter = FirebaseRecycleAdapater
-//    }
+
 }
