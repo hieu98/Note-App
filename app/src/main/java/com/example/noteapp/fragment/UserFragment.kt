@@ -14,9 +14,13 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.noteapp.R
 import com.example.noteapp.activity.Login
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ListResult
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 
 
@@ -26,6 +30,7 @@ class UserFragment() : Fragment() {
     private var mAuth:FirebaseAuth? = null
     private var fbUser: FirebaseUser? = null
     private var AlbumRef:DatabaseReference?=null
+    private var storageReference: StorageReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +50,7 @@ class UserFragment() : Fragment() {
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference.child("Users")
         AlbumRef = mDatabase!!.reference.child("Users")
+        storageReference = FirebaseStorage.getInstance().getReference(fbUser!!.uid)
 
         val imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
         val tvName = view.findViewById<TextView>(R.id.tv_user_name)
@@ -72,25 +78,24 @@ class UserFragment() : Fragment() {
         mAlbumReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val countAlbums: Int = snapshot.childrenCount.toInt()
-                tvAlbum.text = (countAlbums - 1).toString()
-
-
-//                var countImage: Int = 0
-//                for (ds in snapshot.children) {
-//                    var map : Map<String, Object> = ds.value as (Map<String, Object>)
-//                    var ctimage : Object? = map.get("Count Image")
-//                    var pValue = ctimage.toString().toInt()
-//
-//                    countImage += pValue
-//
-//                    tvImage.text = countImage.toString()
-////                }
+                tvAlbum.text = countAlbums.toString()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
         })
+//          Đếm tổng số ảnh có trong storage
+            val fileRef = storageReference?.child("imagetotal/")
+        if (fileRef != null) {
+            fileRef.listAll().addOnSuccessListener(OnSuccessListener<ListResult> { listResult ->
+                for (item in listResult.items) {
+                    val countofimages = listResult.items.size
+                    tvImage.text = countofimages.toString()
+                }
+            })
+        }
+
         return view
     }
 

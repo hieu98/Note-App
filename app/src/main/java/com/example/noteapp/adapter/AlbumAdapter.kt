@@ -7,22 +7,27 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.noteapp.R
 import com.example.noteapp.model.Album
 
-class AlbumAdapter(private val context: Context, private val albumItemList:MutableList<Album>, private val listener:AlbumAdapterListener):
+class AlbumAdapter(private val context: Context, private val albumItemList:ArrayList<Album>
+//                   , private val listener:AlbumAdapterListener
+):
     RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder>(){
+
+    private val Tag : String = "RecyclerView"
 
     inner class AlbumViewHolder(itemview : View): RecyclerView.ViewHolder(itemview){
         internal val img_album = itemview.findViewById(R.id.img_album) as ImageView
         internal val txt_namealbum = itemview.findViewById<TextView>(R.id.txt_namealbum)
         internal val txt_notealbum = itemview.findViewById<TextView>(R.id.txt_notealbum)
 
-        init {
-            itemview.setOnClickListener {
-                listener.onAlbumItemSelected(albumItemList[adapterPosition])
-            }
-        }
+//        init {
+//            itemview.setOnClickListener {
+//                listener.onAlbumItemSelected(albumItemList[adapterPosition])
+//            }
+//        }
     }
 
     interface AlbumAdapterListener {
@@ -35,9 +40,13 @@ class AlbumAdapter(private val context: Context, private val albumItemList:Mutab
     }
 
     override fun onBindViewHolder(holder: AlbumViewHolder, position: Int) {
-        holder.img_album.setImageBitmap(albumItemList[position].image)
-        holder.txt_namealbum.setText(albumItemList[position].nameab)
-        holder.txt_notealbum.setText(albumItemList[position].note)
+//        holder.img_album.setImageBitmap(albumItemList[position].image)
+        holder.txt_namealbum.setText(albumItemList[position].Nameab)
+        holder.txt_notealbum.setText(albumItemList[position].Note)
+        Glide.with(context)
+            .load(albumItemList.get(position).Image)
+            .into(holder.img_album)
+
     }
 
     override fun getItemCount(): Int {

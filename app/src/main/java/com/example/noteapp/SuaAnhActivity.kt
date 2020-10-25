@@ -562,8 +562,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             currentUserDb!!.updateChildren(result)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
-//                    alertCreateAlbumNote("Note", value)
-
                     alertWriteNote("note", mName, value)
                     val userId = mAuth!!.currentUser!!.uid
                     val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
@@ -583,6 +581,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         }
         alertDialog2.create().show()
     }
+
     private fun alertCreateAlbumNote(key: String, name: String) {
 
         val alertDialog2 = AlertDialog.Builder(this)
