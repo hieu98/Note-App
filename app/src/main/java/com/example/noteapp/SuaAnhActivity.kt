@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Typeface
 import android.hardware.Sensor
@@ -28,7 +29,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import com.example.noteapp.Interface.AddTextFragmentListener
 import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
@@ -42,7 +42,6 @@ import com.example.noteapp.fragment.FilterListFragment
 import com.example.noteapp.fragment.IconFragment
 import com.example.noteapp.model.Image
 import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -51,7 +50,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -66,8 +64,13 @@ import ja.burhanrashid52.photoeditor.PhotoEditor
 import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
 import java.lang.Math.sqrt
+import java.net.URL
+import java.net.URLConnection
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -136,13 +139,12 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         image_preview = findViewById(R.id.image_preview)
 
         val a = intent.getBooleanExtra("a", false)
-        val uri = intent.getStringExtra("uri") // lấy uri theo string từ ImageActivity
-        val myuri = Uri.parse(uri) // chuyển sang uri
+        val uri = intent.getStringExtra("url") // lấy url theo string từ ImageActivity
         if (a)
             openCamera()
         // load ảnh theo uri vừa chọn
         if (uri != null)
-            loadImageSelect(myuri)
+            loadImageSelect(uri)
         else
             loadImage()
 
@@ -202,12 +204,45 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     }
 
     // Load theo uri
-    private fun loadImageSelect(myuri :Uri){
-        originalImage = BitmapUtils.getBitmapFromGallery(this, myuri, 200, 300)
+    private fun loadImageSelect(myuri: String){
+        originalImage = BitmapUtils.getBitmapFromURL(myuri)
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
         finalImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
         image_preview.source.setImageBitmap(originalImage)
     }
+
+    fun loadBitmap(uri: String) : Bitmap?{
+        var bm: Bitmap? = null
+        var ips: InputStream? = null
+        var bis: BufferedInputStream? = null
+        try {
+            val conn: URLConnection = URL(uri).openConnection()
+            conn.connect()
+            ips = conn.getInputStream()
+            bis = BufferedInputStream(ips, 8192)
+            bm = BitmapFactory.decodeStream(bis)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (ips != null) {
+                try {
+                    ips.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        return bm
+    }
+
+
 
     override fun onFilterSelected(filter: Filter) {
         resetControl()
@@ -488,7 +523,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         alertChooseAlbumSave(mName, mUri)
     }
 
-    private fun alertWriteNote(key: String, name: String,location : String) {
+    private fun alertWriteNote(key: String, name: String, location: String) {
 
         val alertDialog2 = AlertDialog.Builder(this)
         alertDialog2.setTitle("Update Note")
@@ -537,9 +572,14 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             override fun onClick(dialog: DialogInterface?, which: Int) {
                 alertWriteNote("note", name, album[which])
                 val userId = mAuth!!.currentUser!!.uid
-                val currentUserDb = databaseReference!!.child(userId).child("The Album").child(album[which])
-                currentUserDb.child(name)?.setValue(Image(name,uri, album[which]))
-                Toast.makeText(this@SuaAnhActivity, "You have selected " + album[which], Toast.LENGTH_LONG).show()
+                val currentUserDb =
+                    databaseReference!!.child(userId).child("The Album").child(album[which])
+                currentUserDb.child(name)?.setValue(Image(name, uri, album[which]))
+                Toast.makeText(
+                    this@SuaAnhActivity,
+                    "You have selected " + album[which],
+                    Toast.LENGTH_LONG
+                ).show()
             }
         })
 
@@ -577,9 +617,15 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
                     alertWriteNote("note", mName, value)
                     val userId = mAuth!!.currentUser!!.uid
-                    val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
-                    currentUserDb.child(mName)?.setValue(Image(mName,mUri, value))
-                    Toast.makeText(this@SuaAnhActivity, "You have selected" + value, Toast.LENGTH_LONG).show()
+                    val currentUserDb = databaseReference!!.child(userId).child("The Album").child(
+                        value
+                    )
+                    currentUserDb.child(mName)?.setValue(Image(mName, mUri, value))
+                    Toast.makeText(
+                        this@SuaAnhActivity,
+                        "You have selected" + value,
+                        Toast.LENGTH_LONG
+                    ).show()
                     alertCreateAlbumNote("Note", value)
                 }
                 .addOnFailureListener {

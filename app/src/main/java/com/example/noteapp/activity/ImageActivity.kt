@@ -31,7 +31,8 @@ class ImageActivity : AppCompatActivity() {
         btn_setava= findViewById(R.id.btn_setava)
         hideLayout(a)
         var intent1 : Intent
-        val uri : String? = intent.getStringExtra("uri")
+        // Nhận link ảnh trong storage
+        val url : String? = intent.getStringExtra("url")
 
         img_select!!.setOnClickListener {
             if (!a) {
@@ -44,10 +45,10 @@ class ImageActivity : AppCompatActivity() {
         }
 
         btn_fiximage!!.setOnClickListener {
+            // Truyền url sang SuaAnhActivity
             intent1 = Intent(this,SuaAnhActivity::class.java)
-            // gửi ảnh sang
             intent1.putExtra("a",false)
-            intent1.putExtra("uri",uri)
+            intent1.putExtra("url",url)
             startActivity(intent1)
         }
 

@@ -69,8 +69,6 @@ class HomeFragment() : Fragment(),AlbumAdapter.AlbumAdapterListener {
 //        albumAdapter = AlbumAdapter(context!!,albumList!!,this)
 //        recycler_home.adapter = albumAdapter
 //        albumAdapter!!.notifyDataSetChanged()
-
-
         return view
     }
 

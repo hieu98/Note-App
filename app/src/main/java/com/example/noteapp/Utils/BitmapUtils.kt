@@ -18,6 +18,8 @@ import android.util.Log
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 object BitmapUtils {
 
@@ -52,6 +54,20 @@ object BitmapUtils {
         options.inSampleSize = calculateInSampleSize(options,width,height)
         options.inJustDecodeBounds =false
         return BitmapFactory.decodeFile(picturePatch,options)
+    }
+
+    fun getBitmapFromURL(src: String?): Bitmap? {
+        return try {
+            val url = URL(src)
+            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+            connection.setDoInput(true)
+            connection.connect()
+            val input: InputStream = connection.getInputStream()
+            BitmapFactory.decodeStream(input)
+        } catch (e: IOException) {
+            // Log exception
+            null
+        }
     }
 
     fun insertImage(contentResolver: ContentResolver,source :Bitmap?,title :String,description :String):String?{

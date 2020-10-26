@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,6 +63,7 @@ class UserFragment() : Fragment() {
                 tvPhone.text = "" + snapshot!!.child("Phone Number").value
 
                 val message: String = "" + snapshot.child("The Album").child("User Avatar").value
+                Log.e("message",message)
                 Picasso.get().load(message).into(imgAvatar)
             }
 
