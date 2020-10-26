@@ -6,9 +6,11 @@
     tools:context=".fragment.ListAlbumtoSelectFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
+        android:id="@+id/lv_Album"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>

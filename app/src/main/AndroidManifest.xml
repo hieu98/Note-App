@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/my_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.ListImageActivity"></activity>
+        <activity android:name=".activity.ImageActivity"></activity>
+        <activity android:name=".activity.ListImageActivity" />
         <activity
             android:name=".SuaAnhActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />

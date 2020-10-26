@@ -5,16 +5,15 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Typeface
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,11 +22,13 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.example.noteapp.Interface.AddTextFragmentListener
 import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
@@ -103,17 +104,19 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     internal var imageUri: Uri? = null
     internal val CAMERA_REQUEST: Int = 9999
 
+    //Shake Sensor Part
     private var mSensorManager: SensorManager? = null
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
-
     private val SHAKE_SLOP_TIME_MS = 999999
     private val SHAKE_COUNT_RESET_TIME_MS = 5000
+    //
+//Choose List Album part
+    var album = arrayOf("Friday", "Monday", "Total")
 
     object Main {
         val IMAGE_NAME = "flash.jpg"
-
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
@@ -133,15 +136,24 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         image_preview = findViewById(R.id.image_preview)
 
         val a = intent.getBooleanExtra("a", false)
+        val uri = intent.getStringExtra("uri") // lấy uri theo string từ ImageActivity
+        val myuri = Uri.parse(uri) // chuyển sang uri
         if (a)
             openCamera()
-        loadImage()
+        // load ảnh theo uri vừa chọn
+        if (uri != null)
+            loadImageSelect(myuri)
+        else
+            loadImage()
+
         setupViewPager(viewPager)
         tabs.setupWithViewPager(viewPager)
+
         photoEditor = PhotoEditor.Builder(this, image_preview)
             .setPinchTextScalable(true)
             .setDefaultEmojiTypeface(Typeface.createFromAsset(assets, "emojione-android.ttf"))
             .build()
+
         filterListFragment = FilterListFragment.getInstance(null)
         editImageFragment = EditImageFragment.getInstance()
         iconFragment = IconFragment.getInstance()
@@ -161,7 +173,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             iconFragment.show(supportFragmentManager, iconFragment.tag)
         }
 
-
         btn_addtext.setOnClickListener {
             addTextFragment.setLintener(this)
             addTextFragment.show(supportFragmentManager, addTextFragment.tag)
@@ -180,10 +191,19 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         adapter.addFragment(editImageFragment, "EDIT")
 
         viewPager?.adapter = adapter
+
     }
 
     private fun loadImage() {
         originalImage = BitmapUtils.getBitmapFromAssets(this, Main.IMAGE_NAME, 200, 300)
+        filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
+        finalImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
+        image_preview.source.setImageBitmap(originalImage)
+    }
+
+    // Load theo uri
+    private fun loadImageSelect(myuri :Uri){
+        originalImage = BitmapUtils.getBitmapFromGallery(this, myuri, 200, 300)
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
         finalImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
         image_preview.source.setImageBitmap(originalImage)
@@ -280,7 +300,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             return true
         } else if (id == R.id.action_save) {
             saveImageFromGallery()
-            uploadFileImage()
+
             return true
         } else if (id == R.id.action_camera) {
             openCamera()
@@ -337,7 +357,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                         photoEditor.saveAsBitmap(object : OnSaveBitmap {
                             override fun onBitmapReady(saveBitmap: Bitmap?) {
                                 val pd = ProgressDialog(this@SuaAnhActivity)
-                                pd.setTitle("Uploading")
+                                pd.setTitle("Get ready")
                                 pd.show()
 
                                 val path = BitmapUtils.insertImage(
@@ -346,6 +366,8 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                                     System.currentTimeMillis().toString() + "_profile.jpg",
                                     ""
                                 )
+
+
                                 val calendar = Calendar.getInstance()
                                 val fileRef = storageReference?.child(
                                     "imagetotal/" + UUID.randomUUID().toString()
@@ -366,27 +388,24 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                                         snackBar.show()
                                     }
                                 })
-                                    .addOnSuccessListener(object :
-                                        OnSuccessListener<UploadTask.TaskSnapshot?> {
-                                        override fun onSuccess(p0: UploadTask.TaskSnapshot?) {
-                                            pd.dismiss()
-                                            val uri: Task<Uri> = p0!!.storage.downloadUrl
-                                            val snackBar = Snackbar.make(
-                                                coordinator,
-                                                "Image Uploaded",
-                                                Snackbar.LENGTH_LONG
-                                            )
-                                            writeNewFileImage(
-                                                "IMG" + calendar.timeInMillis,
-                                                uri.toString()
-                                            )
-                                            snackBar.show()
-                                        }
-                                    })
+                                    .addOnSuccessListener { p0 ->
+                                        pd.dismiss()
+                                        val uri: Task<Uri> = p0!!.storage.downloadUrl
+                                        val snackBar = Snackbar.make(
+                                            coordinator,
+                                            "Image Uploaded",
+                                            Snackbar.LENGTH_LONG
+                                        )
+                                        writeNewFileImage(
+                                            "IMG" + calendar.timeInMillis,
+                                            uri.toString()
+                                        )
+                                        snackBar.show()
+                                    }
                                     .addOnProgressListener { p0 ->
                                         val progress: Double =
                                             (100.0 * p0.bytesTransferred) / p0.totalByteCount
-                                        pd.setMessage("Upload ${progress.toInt()}%")
+                                        pd.setMessage("Loading đến ${progress.toInt()}%")
                                     }
                                 if (!TextUtils.isEmpty(path)) {
                                     val snackBar = Snackbar.make(
@@ -465,15 +484,11 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             }).check()
     }
 
-    private fun writeNewFileImage(name: String, mUri: String) {
-        val mImage = Image(name, mUri)
-        alertWriteNote("note", name)
-        val userId = mAuth!!.currentUser!!.uid
-        val currentUserDb = databaseReference!!.child(userId).child("The Album").child("Total")
-        currentUserDb.child(name)?.setValue(mImage)
+    private fun writeNewFileImage(mName: String, mUri: String) {
+        alertChooseAlbumSave(mName, mUri)
     }
 
-    private fun alertWriteNote(key: String, name: String) {
+    private fun alertWriteNote(key: String, name: String,location : String) {
 
         val alertDialog2 = AlertDialog.Builder(this)
         alertDialog2.setTitle("Update Note")
@@ -492,7 +507,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             val result = java.util.HashMap<String, Any>()
             result[key] = value
             val userId = mAuth!!.currentUser!!.uid
-            val currentUserDb = databaseReference!!.child(userId).child("The Album").child("Total")
+            val currentUserDb = databaseReference!!.child(userId).child("The Album").child(location)
             currentUserDb!!.child(name).updateChildren(result)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Updated Note", Toast.LENGTH_SHORT).show()
@@ -513,33 +528,107 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         alertDialog2.create().show()
     }
 
-    fun uploadFileImage() {
-        if (imageUri != null) {
-            val pd = ProgressDialog(this)
-            pd.setTitle("Uploading")
-            pd.show()
+    private fun alertChooseAlbumSave(name: String, uri: String){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Choose Album You Wanna Save")
 
-            val calendar = Calendar.getInstance()
-            val userId = mAuth!!.currentUser!!.uid
-            val currentUserDb = databaseReference!!.child(userId)
-            val fileRef = storageReference?.child("imagetotal/" + UUID.randomUUID().toString())
+        val dataAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, album)
+        builder.setAdapter(dataAdapter, object : DialogInterface.OnClickListener {
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                alertWriteNote("note", name, album[which])
+                val userId = mAuth!!.currentUser!!.uid
+                val currentUserDb = databaseReference!!.child(userId).child("The Album").child(album[which])
+                currentUserDb.child(name)?.setValue(Image(name,uri, album[which]))
+                Toast.makeText(this@SuaAnhActivity, "You have selected " + album[which], Toast.LENGTH_LONG).show()
+            }
+        })
 
-            fileRef?.putFile(imageUri!!)
-                ?.addOnSuccessListener { p0 ->
-                    pd.dismiss()
-                    Toast.makeText(this, "Image Uploaded", Toast.LENGTH_SHORT).show()
-                    writeNewFileImage("IMG" + calendar.timeInMillis, fileRef.downloadUrl.toString())
-                }
-                ?.addOnFailureListener { p0 ->
-                    pd.dismiss()
-                    Toast.makeText(this, p0.message, Toast.LENGTH_SHORT).show()
-                }
-                ?.addOnProgressListener { p0 ->
-                    val progress: Double = (100.0 * p0.bytesTransferred) / p0.totalByteCount
-                    pd.setMessage("Upload ${progress.toInt()}%")
-                }
-
+        builder.setPositiveButton("Add New Album") { dialog, which ->
+            alertCreateAlbumName("Name", name, uri)
         }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun alertCreateAlbumName(key: String, mName: String, mUri: String) {
+
+        val alertDialog2 = AlertDialog.Builder(this)
+        alertDialog2.setTitle("Create New Album")
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(50, 10, 10, 10)
+
+        val editText1 = EditText(this)
+        editText1.hint = "Write Album $key"
+
+        linearLayout.addView(editText1)
+        alertDialog2.setView(linearLayout)
+        alertDialog2.setPositiveButton("Create") { dialog, which ->
+            val value = editText1.text.toString().trim { it <= ' ' }
+            val result = java.util.HashMap<String, Any>()
+            result[key] = value
+            val userId = mAuth!!.currentUser!!.uid
+            val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
+            currentUserDb!!.updateChildren(result)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
+//                    alertCreateAlbumNote("Note", value)
+
+                    alertWriteNote("note", mName, value)
+                    val userId = mAuth!!.currentUser!!.uid
+                    val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
+                    currentUserDb.child(mName)?.setValue(Image(mName,mUri, value))
+                    Toast.makeText(this@SuaAnhActivity, "You have selected" + value, Toast.LENGTH_LONG).show()
+                    alertCreateAlbumNote("Note", value)
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Created $key Failed ", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
+            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
+                .show()
+            dialog.cancel()
+        }
+        alertDialog2.create().show()
+    }
+    private fun alertCreateAlbumNote(key: String, name: String) {
+
+        val alertDialog2 = AlertDialog.Builder(this)
+        alertDialog2.setTitle("Create New Album")
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(50, 10, 10, 10)
+
+        val editText1 = EditText(this)
+        editText1.hint = "Write something about your album"
+
+        linearLayout.addView(editText1)
+        alertDialog2.setView(linearLayout)
+        alertDialog2.setPositiveButton("Create") { dialog, which ->
+            val value = editText1.text.toString().trim { it <= ' ' }
+            val result = java.util.HashMap<String, Any>()
+            result[key] = value
+            val userId = mAuth!!.currentUser!!.uid
+            val currentUserDb = databaseReference!!.child(userId).child("The Album")
+            currentUserDb!!.child(name).updateChildren(result)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Created $key Failed ", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
+            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
+                .show()
+            dialog.cancel()
+        }
+        alertDialog2.create().show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -635,13 +724,13 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                     Toast.makeText(applicationContext, "Rotate Up", Toast.LENGTH_SHORT)
                         .show()
                 }else if (Round(y, 4)< 30.0000) {
-                val bitmap = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
-                bitmap.apply {
-                    val imageView = findViewById<PhotoEditorView>(R.id.image_preview)
-                    imageView.source.setImageBitmap(this!!.rotate(0F))
-                }
-                Toast.makeText(applicationContext, "Rotate Down", Toast.LENGTH_SHORT)
-                    .show()
+                    val bitmap = filteredImage.copy(Bitmap.Config.ARGB_8888, true)
+                    bitmap.apply {
+                        val imageView = findViewById<PhotoEditorView>(R.id.image_preview)
+                        imageView.source.setImageBitmap(this!!.rotate(0F))
+                    }
+                    Toast.makeText(applicationContext, "Rotate Down", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -674,7 +763,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         val tmp = Rval.roundToInt().toFloat()
         return tmp / p
     }
-    
+
 
     //Xoay bitmap
     fun Bitmap.rotate(angle: Float = 0F): Bitmap? {

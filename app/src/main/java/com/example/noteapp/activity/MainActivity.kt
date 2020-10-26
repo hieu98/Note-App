@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
     private var fbUser: FirebaseUser? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         btn1.setOnClickListener {
             val intent = Intent(this, SuaAnhActivity::class.java)
             hidebutton(false)
-            intent.putExtra("a",true)
+            intent.putExtra("a", true)
             startActivity(intent)
         }
         btn2.setOnClickListener {
@@ -67,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().hide(fragment2).commit()
         nav.setSpaceOnClickListener(object : SpaceOnClickListener {
             override fun onCentreButtonClick() {
-//                Toast.makeText(this@MainActivity, "onCentreButtonClick", Toast.LENGTH_SHORT).show()
                 nav.setCentreButtonSelectable(true)
                 if (!a) {
                     hidebutton(true)
@@ -77,18 +75,18 @@ class MainActivity : AppCompatActivity() {
                     a = false
                 }
             }
+
             override fun onItemClick(itemIndex: Int, itemName: String) {
-//                Toast.makeText(this@MainActivity, "$itemIndex $itemName", Toast.LENGTH_SHORT).show()
                 if (itemName == "HOME") {
                     supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
                     active = fragment1
                     hidebutton(false)
-                    a=false
+                    a = false
                 } else {
                     supportFragmentManager.beginTransaction().hide(active).show(fragment2).commit()
                     active = fragment2
                     hidebutton(false)
-                    a=false
+                    a = false
                 }
             }
 
@@ -105,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun hidebutton(a: Boolean) {
+    private fun hidebutton(a: Boolean) {
         if (a){
             btn1.visibility= View.VISIBLE
             btn2.visibility= View.VISIBLE
