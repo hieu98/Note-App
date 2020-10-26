@@ -13,7 +13,10 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.noteapp.R
+import com.example.noteapp.activity.ListImageActivity
 import com.example.noteapp.activity.Login
+import com.example.noteapp.activity.MainActivity
+import com.example.noteapp.activity.SignUp
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -115,6 +118,10 @@ class UserFragment() : Fragment() {
             alertEditPhone("Phone Number")
         })
 
+        val viewImage = view.findViewById<TextView>(R.id.tv_num_image)
+        viewImage.setOnClickListener(View.OnClickListener {
+            startActivity(Intent(context, ListImageActivity::class.java))
+        })
     }
 
     companion object {

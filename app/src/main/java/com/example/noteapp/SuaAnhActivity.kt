@@ -356,7 +356,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
                                 val calendar = Calendar.getInstance()
                                 val fileRef = storageReference?.child(
-                                    "imagetotal/" + UUID.randomUUID().toString()
+                                    "imagetotal/" + ("IMG" + calendar.timeInMillis).toString()
                                 )
                                 val baos: ByteArrayOutputStream = ByteArrayOutputStream()
                                 saveBitmap!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
