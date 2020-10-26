@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.R
 import com.example.noteapp.SuaAnhActivity
+import com.squareup.picasso.Picasso
 
 class ImageActivity : AppCompatActivity() {
 
@@ -33,6 +34,7 @@ class ImageActivity : AppCompatActivity() {
         var intent1 : Intent
         // Nhận link ảnh trong storage
         val url : String? = intent.getStringExtra("url")
+        Picasso.get().load(url).into(img_select)
 
         img_select!!.setOnClickListener {
             if (!a) {
