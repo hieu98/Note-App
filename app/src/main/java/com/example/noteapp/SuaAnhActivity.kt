@@ -22,10 +22,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.Interface.AddTextFragmentListener
@@ -35,10 +32,7 @@ import com.example.noteapp.Interface.IconFragmentListener
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
 import com.example.noteapp.adapter.ViewPagerAdapter
-import com.example.noteapp.fragment.AddTextFragment
-import com.example.noteapp.fragment.EditImageFragment
-import com.example.noteapp.fragment.FilterListFragment
-import com.example.noteapp.fragment.IconFragment
+import com.example.noteapp.fragment.*
 import com.example.noteapp.model.Image
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -49,6 +43,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.karumi.dexter.Dexter
@@ -65,6 +60,7 @@ import ja.burhanrashid52.photoeditor.PhotoEditor
 import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.fragment_user.*
 import java.io.ByteArrayOutputStream
 import java.lang.Math.sqrt
 import java.util.*
@@ -112,7 +108,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     private val SHAKE_COUNT_RESET_TIME_MS = 5000
 //
 //Choose List Album part
-    var album = arrayOf("Friday", "Monday", "Total")
+    var album = arrayOf("Dongie~", "Friday","Kim Bora","Kim Minji","Kim Yoohyeon","Lee GaHyeon", "Lee Siyeon si~", "Monday","PanDami", "Total")
 
 
 
@@ -475,6 +471,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
     private fun writeNewFileImage(mName: String, mUri: String) {
         alertChooseAlbumSave(mName, mUri)
+
     }
 
     private fun alertWriteNote(key: String, name: String,location : String) {
@@ -506,13 +503,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                     Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()
                     onBackPressed()
                 }
-        }
-
-        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
-            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
-                .show()
-            dialog.cancel()
-            onBackPressed()
         }
         alertDialog2.create().show()
     }
