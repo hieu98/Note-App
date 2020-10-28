@@ -1,5 +1,6 @@
 package com.example.noteapp
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -59,6 +60,7 @@ import ja.burhanrashid52.photoeditor.PhotoEditor
 import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -155,7 +157,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         iconFragment = IconFragment.getInstance()
         addTextFragment = AddTextFragment.getInstance()
 
-        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        mSensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         Objects.requireNonNull(mSensorManager)!!.registerListener(
             sensorListener, mSensorManager!!
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
@@ -308,8 +310,8 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     private fun openCamera() {
         val withListener = Dexter.withActivity(this)
             .withPermissions(
-                android.Manifest.permission.CAMERA,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
@@ -343,8 +345,8 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     private fun saveImageFromGallery() {
         val withListener = Dexter.withActivity(this)
             .withPermissions(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
@@ -456,8 +458,8 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     private fun openImageFromGallery() {
         val withListener = Dexter.withActivity(this)
             .withPermissions(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
@@ -501,7 +503,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         alertDialog2.setView(linearLayout)
         alertDialog2.setPositiveButton("Update") { dialog, which ->
             val value = editText.text.toString().trim { it <= ' ' }
-            val result = java.util.HashMap<String, Any>()
+            val result = HashMap<String, Any>()
             result[key] = value
             val userId = mAuth!!.currentUser!!.uid
             val currentUserDb = databaseReference!!.child(userId).child("The Album").child(location)
@@ -561,7 +563,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         alertDialog2.setView(linearLayout)
         alertDialog2.setPositiveButton("Create") { dialog, which ->
             val value = editText1.text.toString().trim { it <= ' ' }
-            val result = java.util.HashMap<String, Any>()
+            val result = HashMap<String, Any>()
             result[key] = value
             val userId = mAuth!!.currentUser!!.uid
             val currentUserDb = databaseReference!!.child(userId).child("The Album").child(value)
@@ -610,7 +612,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         alertDialog2.setView(linearLayout)
         alertDialog2.setPositiveButton("Create") { dialog, which ->
             val value = editText1.text.toString().trim { it <= ' ' }
-            val result = java.util.HashMap<String, Any>()
+            val result = HashMap<String, Any>()
             result[key] = value
             val userId = mAuth!!.currentUser!!.uid
             val currentUserDb = databaseReference!!.child(userId).child("The Album")
@@ -633,7 +635,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == SELECT_GALLERY_PERMISSION) {
+        if (resultCode == RESULT_OK && requestCode == SELECT_GALLERY_PERMISSION) {
             val bitmap = BitmapUtils.getBitmapFromGallery(this, data?.data!!, 600, 800)
             originalImage!!.recycle()
             filteredImage.recycle()
@@ -648,7 +650,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             filterListFragment = FilterListFragment.getInstance(originalImage)
             filterListFragment.setListener(this)
 
-        } else if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST) {
+        } else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
             val bitmap = BitmapUtils.getBitmapFromGallery(this, imageUri!!, 600, 800)
 
             originalImage!!.recycle()

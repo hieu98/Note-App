@@ -1,7 +1,6 @@
 package com.example.noteapp.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -32,14 +31,14 @@ class ListImageActivity : AppCompatActivity() {
             //add cycle for add image url to list
             items.forEachIndexed { index, item ->
                 item.downloadUrl.addOnSuccessListener {
-                    Log.d("item", "$it")
                     imageList.add(Item(it.toString()))
                 }.addOnCompleteListener {
-                    recyclerView.adapter = ImageAdapter(imageList, this)
+                    recyclerView.adapter = ImageAdapter(imageList, this,)
                     recyclerView.layoutManager = GridLayoutManager(this, 3)
                     progressBar.visibility = View.GONE
                 }
             }
         }
+
     }
 }

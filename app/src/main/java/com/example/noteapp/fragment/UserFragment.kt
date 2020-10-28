@@ -58,9 +58,6 @@ class UserFragment() : Fragment() {
         val tvName = view.findViewById<TextView>(R.id.tv_user_name)
         val tvEmail = view.findViewById<TextView>(R.id.tv_user_mail)
         val tvPhone = view.findViewById<TextView>(R.id.tv_user_phone)
-        val tvAlbum = view.findViewById<TextView>(R.id.tv_num_album)
-        var tvImage = view.findViewById<TextView>(R.id.tv_num_image)
-
 
         val mUserReference = mDatabaseReference!!.child(fbUser!!.uid)
         mUserReference.addValueEventListener(object : ValueEventListener {
@@ -103,6 +100,11 @@ class UserFragment() : Fragment() {
 
         val viewImage = view.findViewById<TextView>(R.id.tv_num_image)
         viewImage.setOnClickListener(View.OnClickListener {
+            startActivity(Intent(context, ListImageActivity::class.java))
+        })
+
+        val editAvatar:ImageView = view.findViewById(R.id.imgbt_user_avatar)
+        editAvatar.setOnClickListener(View.OnClickListener {
             startActivity(Intent(context, ListImageActivity::class.java))
         })
     }
