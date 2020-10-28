@@ -89,12 +89,13 @@ class MainActivity : AppCompatActivity() {
                     hidebutton(false)
                     a = false
                 } else {
-                    supportFragmentManager.beginTransaction().hide(active).show(fragment2).commit()
+                    supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(fragment2).attach(fragment2).commit()
                     active = fragment2
                     hidebutton(false)
                     a = false
                 }
             }
+
 
             override fun onItemReselected(itemIndex: Int, itemName: String) {
 //                Toast.makeText(this@MainActivity, "$itemIndex $itemName", Toast.LENGTH_SHORT).show()
@@ -143,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
                     alertCreateAlbumNote("Note", value)
-                    val FileRef = storageReference?.child(value)
+
 
                 }
                 .addOnFailureListener {

@@ -23,10 +23,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.Interface.AddTextFragmentListener
@@ -36,10 +33,7 @@ import com.example.noteapp.Interface.IconFragmentListener
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
 import com.example.noteapp.adapter.ViewPagerAdapter
-import com.example.noteapp.fragment.AddTextFragment
-import com.example.noteapp.fragment.EditImageFragment
-import com.example.noteapp.fragment.FilterListFragment
-import com.example.noteapp.fragment.IconFragment
+import com.example.noteapp.fragment.*
 import com.example.noteapp.model.Image
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.Task
@@ -49,6 +43,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -64,7 +59,6 @@ import ja.burhanrashid52.photoeditor.PhotoEditor
 import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -116,7 +110,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
     private val SHAKE_COUNT_RESET_TIME_MS = 5000
     //
 //Choose List Album part
-    var album = arrayOf("Friday", "Monday", "Total")
+    var album = arrayOf("Dongie~", "Friday","Kim Bora","Kim Minji","Kim Yoohyeon","Lee GaHyeon", "Lee Siyeon si~", "Monday","PanDami", "Total")
 
     object Main {
         val IMAGE_NAME = "flash.jpg"
@@ -210,39 +204,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         finalImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)
         image_preview.source.setImageBitmap(originalImage)
     }
-
-    fun loadBitmap(uri: String) : Bitmap?{
-        var bm: Bitmap? = null
-        var ips: InputStream? = null
-        var bis: BufferedInputStream? = null
-        try {
-            val conn: URLConnection = URL(uri).openConnection()
-            conn.connect()
-            ips = conn.getInputStream()
-            bis = BufferedInputStream(ips, 8192)
-            bm = BitmapFactory.decodeStream(bis)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-            if (ips != null) {
-                try {
-                    ips.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        return bm
-    }
-
-
 
     override fun onFilterSelected(filter: Filter) {
         resetControl()
@@ -405,7 +366,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
                                 val calendar = Calendar.getInstance()
                                 val fileRef = storageReference?.child(
-                                    "imagetotal/" + UUID.randomUUID().toString()
+                                    "imagetotal/" + ("IMG" + calendar.timeInMillis).toString()
                                 )
                                 val baos: ByteArrayOutputStream = ByteArrayOutputStream()
                                 saveBitmap!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
@@ -521,6 +482,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
 
     private fun writeNewFileImage(mName: String, mUri: String) {
         alertChooseAlbumSave(mName, mUri)
+
     }
 
     private fun alertWriteNote(key: String, name: String, location: String) {
@@ -552,13 +514,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
                     Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()
                     onBackPressed()
                 }
-        }
-
-        alertDialog2.setNegativeButton("Cancel") { dialog, which ->
-            Toast.makeText(this, "You clicked on Cancel", Toast.LENGTH_SHORT)
-                .show()
-            dialog.cancel()
-            onBackPressed()
         }
         alertDialog2.create().show()
     }
@@ -613,8 +568,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             currentUserDb!!.updateChildren(result)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Created New Album $key", Toast.LENGTH_SHORT).show()
-//                    alertCreateAlbumNote("Note", value)
-
                     alertWriteNote("note", mName, value)
                     val userId = mAuth!!.currentUser!!.uid
                     val currentUserDb = databaseReference!!.child(userId).child("The Album").child(
@@ -640,6 +593,7 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         }
         alertDialog2.create().show()
     }
+
     private fun alertCreateAlbumNote(key: String, name: String) {
 
         val alertDialog2 = AlertDialog.Builder(this)

@@ -17,17 +17,19 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.signup_activity.*
 
 class SignUp : AppCompatActivity() {
-    private val DEFAULT_IMAGE_URL = "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png"
+    private val DEFAULT_IMAGE_URL =
+        "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png"
 
-    private var inputEmail : EditText?=null
-    private var inputPassword : EditText?=null
-    private var inputName : EditText?=null
-    private var btnSignIn: Button?=null
-    private var btnSignUp: Button?=null
+    private var inputEmail: EditText? = null
+    private var inputPassword: EditText? = null
+    private var inputName: EditText? = null
+    private var btnSignIn: Button? = null
+    private var btnSignUp: Button? = null
 
-    private var fbAuth: FirebaseAuth?=null
-    private var mRef : DatabaseReference?=null
-    private var mDatabase: FirebaseDatabase?=null
+    private var fbAuth: FirebaseAuth? = null
+    private var mRef: DatabaseReference? = null
+    private var mDatabase: FirebaseDatabase? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,32 +64,40 @@ class SignUp : AppCompatActivity() {
 
             mprogressBar.visibility = View.VISIBLE
 
-            if (TextUtils.isEmpty(email)){
+            if (TextUtils.isEmpty(email)) {
                 Toast.makeText(applicationContext, "Enter your email!", Toast.LENGTH_LONG).show()
                 mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
-            if (TextUtils.isEmpty(password)){
+            if (TextUtils.isEmpty(password)) {
                 Toast.makeText(applicationContext, "Enter your password!", Toast.LENGTH_LONG).show()
                 mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
-            if (password.length < 6){
-                Toast.makeText(applicationContext, "Password too short!Please enter more than 6 characters!", Toast.LENGTH_LONG).show()
+            if (password.length < 6) {
+                Toast.makeText(
+                    applicationContext,
+                    "Password too short!Please enter more than 6 characters!",
+                    Toast.LENGTH_LONG
+                ).show()
                 mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
-            if (TextUtils.isEmpty(name)){
+            if (TextUtils.isEmpty(name)) {
                 Toast.makeText(applicationContext, "Enter your name!", Toast.LENGTH_LONG).show()
                 mprogressBar.visibility = View.GONE
                 return@OnClickListener
             }
 
             fbAuth!!.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) {task ->
-                    if (task.isSuccessful){
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
                         mprogressBar.visibility = View.GONE
-                        Toast.makeText(applicationContext, "Create New Account Successfully!Welcome!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            applicationContext,
+                            "Create New Account Successfully!Welcome!",
+                            Toast.LENGTH_LONG
+                        ).show()
 
                         val userId = fbAuth!!.currentUser!!.uid
                         val currentUserDb = mRef!!.child(userId)
@@ -96,33 +106,50 @@ class SignUp : AppCompatActivity() {
                         currentUserDb.child("Phone Number").setValue(phone)
                         currentUserDb.child("The Album").child("User Avatar").setValue(imageProfile)
                         updateUserInfoAndUI()
-                    }else{
+
+
+                    } else {
                         Log.w("TAG", "createNewAccount:failure", task.exception)
-                        Toast.makeText(applicationContext, "Create New Account Failed! Please try again", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            applicationContext,
+                            "Create New Account Failed! Please try again",
+                            Toast.LENGTH_LONG
+                        ).show()
                         mprogressBar.visibility = View.GONE
                     }
                 }
 
         })
     }
-    private fun updateUserInfoAndUI(){
+
+    private fun updateUserInfoAndUI() {
         val intent = Intent(this@SignUp, MainActivity::class.java)
         intent.addFlags((Intent.FLAG_ACTIVITY_CLEAR_TOP))
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 
+
+
     //Xác thực email có tồn tại hay không
-    private fun verifyEmail(){
+    private fun verifyEmail() {
         val mUser = fbAuth!!.currentUser
         mUser!!.sendEmailVerification()
-            .addOnCompleteListener(this){ task ->
-                if (task.isSuccessful){
-                    Toast.makeText(this@SignUp, "Verification email sent to " + mUser.email, Toast.LENGTH_SHORT).show()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        this@SignUp,
+                        "Verification email sent to " + mUser.email,
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                }else{
+                } else {
                     Log.e("TAG", "sendEmailVerification", task.exception)
-                    Toast.makeText(this@SignUp, "Failed to send verification email!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SignUp,
+                        "Failed to send verification email!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }

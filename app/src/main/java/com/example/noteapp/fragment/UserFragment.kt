@@ -14,19 +14,25 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.noteapp.R
+import com.example.noteapp.activity.ListImageActivity
 import com.example.noteapp.activity.Login
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ListResult
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 
 
 class UserFragment() : Fragment() {
-    private var mDatabaseReference:DatabaseReference? = null
-    private var mDatabase:FirebaseDatabase? = null
-    private var mAuth:FirebaseAuth? = null
+    private var mDatabaseReference: DatabaseReference? = null
+    private var mDatabase: FirebaseDatabase? = null
+    private var mAuth: FirebaseAuth? = null
     private var fbUser: FirebaseUser? = null
-    private var AlbumRef:DatabaseReference?=null
+    private var AlbumRef: DatabaseReference? = null
+    private var storageReference: StorageReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +52,7 @@ class UserFragment() : Fragment() {
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference.child("Users")
         AlbumRef = mDatabase!!.reference.child("Users")
+        storageReference = FirebaseStorage.getInstance().getReference(fbUser!!.uid)
 
         val imgAvatar = view.findViewById<ImageView>(R.id.imgbt_user_avatar)
         val tvName = view.findViewById<TextView>(R.id.tv_user_name)
@@ -70,29 +77,11 @@ class UserFragment() : Fragment() {
             override fun onCancelled(error: DatabaseError) {}
         })
 
-        val mAlbumReference = AlbumRef!!.child(fbUser!!.uid).child("The Album")
-        mAlbumReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val countAlbums: Int = snapshot.childrenCount.toInt()
-                tvAlbum.text = (countAlbums - 1).toString()
+        countTotalAlbum()
 
+//          Đếm tổng số ảnh có trong storage
+        countTotalImage()
 
-//                var countImage: Int = 0
-//                for (ds in snapshot.children) {
-//                    var map : Map<String, Object> = ds.value as (Map<String, Object>)
-//                    var ctimage : Object? = map.get("Count Image")
-//                    var pValue = ctimage.toString().toInt()
-//
-//                    countImage += pValue
-//
-//                    tvImage.text = countImage.toString()
-////                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-        })
         return view
     }
 
@@ -107,18 +96,50 @@ class UserFragment() : Fragment() {
         edtName!!.setOnClickListener(View.OnClickListener {
             alertEditName("Name")
         })
-        val edtPhone  = view.findViewById<TextView>(R.id.tv_user_phone)
+        val edtPhone = view.findViewById<TextView>(R.id.tv_user_phone)
         edtPhone!!.setOnClickListener(View.OnClickListener {
             alertEditPhone("Phone Number")
         })
 
+        val viewImage = view.findViewById<TextView>(R.id.tv_num_image)
+        viewImage.setOnClickListener(View.OnClickListener {
+            startActivity(Intent(context, ListImageActivity::class.java))
+        })
     }
 
     companion object {
         @JvmStatic
-        fun newInstance() : UserFragment {
+        fun newInstance(): UserFragment {
             return UserFragment()
         }
+    }
+
+    fun countTotalImage(){
+        val fileRef = storageReference?.child("imagetotal/")
+        if (fileRef != null) {
+            fileRef.listAll().addOnSuccessListener(OnSuccessListener<ListResult> { listResult ->
+                for (item in listResult.items) {
+                    val countofimages = listResult.items.size
+                    var tvImage = view!!.findViewById<TextView>(R.id.tv_num_image)
+                    tvImage.text = countofimages.toString()
+                }
+            })
+        }
+    }
+
+    fun countTotalAlbum(){
+        val mAlbumReference = AlbumRef!!.child(fbUser!!.uid).child("The Album")
+        mAlbumReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val countAlbums: Int = snapshot.childrenCount.toInt()
+                val tvAlbum = view!!.findViewById<TextView>(R.id.tv_num_album)
+                tvAlbum.text = countAlbums.toString()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
     }
 
     //Set up Logout
@@ -191,7 +212,7 @@ class UserFragment() : Fragment() {
 
         val linearLayout = LinearLayout(activity)
         linearLayout.orientation = LinearLayout.VERTICAL
-        linearLayout.setPadding(50 , 10, 10, 10)
+        linearLayout.setPadding(50, 10, 10, 10)
 
         val editText = EditText(activity)
         editText.hint = "Enter New $key"
