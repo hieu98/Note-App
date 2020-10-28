@@ -2,11 +2,12 @@ package com.example.noteapp.activity
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,7 +15,6 @@ import com.example.noteapp.R
 import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.fragment.HomeFragment
 import com.example.noteapp.fragment.UserFragment
-import com.example.noteapp.model.Album
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -25,8 +25,7 @@ import com.luseen.spacenavigation.SpaceItem
 import com.luseen.spacenavigation.SpaceNavigationView
 import com.luseen.spacenavigation.SpaceOnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
-import kotlin.collections.ArrayList
+
 
 class MainActivity : AppCompatActivity() {
     val fragment1: Fragment = HomeFragment()
@@ -42,7 +41,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        if (Build.VERSION.SDK_INT > 9) {
+            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+        }
         mAuth = FirebaseAuth.getInstance()
         fbUser = mAuth!!.currentUser
         firebaseStorage = FirebaseStorage.getInstance()
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun hidebutton(a: Boolean) {
+    private fun hidebutton(a: Boolean) {
         if (a){
             btn1.visibility= View.VISIBLE
             btn2.visibility= View.VISIBLE
@@ -193,6 +195,4 @@ class MainActivity : AppCompatActivity() {
         }
         alertDialog2.create().show()
     }
-
-
 }

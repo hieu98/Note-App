@@ -4,6 +4,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 
+
 class Album {
     var mName: String = ""
     var mNote: String = ""
