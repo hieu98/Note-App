@@ -12,8 +12,8 @@ import com.example.noteapp.activity.ImageActivity
 import com.example.noteapp.model.Item
 import com.squareup.picasso.Picasso
 
-class ImageAdapter(private var items: List<Item>, private val context: Context) :
-    RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+class SetAvaAdapter(private var items: List<Item>, private val context: Context) :
+    RecyclerView.Adapter<SetAvaAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -24,14 +24,6 @@ class ImageAdapter(private var items: List<Item>, private val context: Context) 
             )
         )
     }
-
-    override fun onBindViewHolder(holder: ImageAdapter.ViewHolder, position: Int) {
-        val item = items[position]
-//        val image = image[position]
-        Picasso.get().load(item.imageUrl).into(holder.imageView)
-
-    }
-
     override fun getItemCount(): Int {
         return items.size
     }
@@ -43,9 +35,16 @@ class ImageAdapter(private var items: List<Item>, private val context: Context) 
             view.setOnClickListener {
                 val intent : Intent = Intent(context, ImageActivity::class.java)
                 intent.putExtra("image_url", items[position].imageUrl)
+                intent.putExtra("setava",true)
                 context.startActivity(intent)
             }
         }
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = items[position]
+//        val image = image[position]
+        Picasso.get().load(item.imageUrl).into(holder.imageView)
     }
 
 }

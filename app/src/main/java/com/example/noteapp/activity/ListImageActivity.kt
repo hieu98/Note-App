@@ -6,7 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.noteapp.R
-import com.example.noteapp.adapter.ImageAdapter
+import com.example.noteapp.adapter.SetAvaAdapter
 import com.example.noteapp.model.Item
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +34,7 @@ class ListImageActivity : AppCompatActivity() {
                 item.downloadUrl.addOnSuccessListener {
                     imageList.add(Item(it.toString()))
                 }.addOnCompleteListener {
-                    recyclerView.adapter = ImageAdapter(imageList, this,)
+                    recyclerView.adapter = SetAvaAdapter(imageList, this,)
                     recyclerView.layoutManager = GridLayoutManager(this, 3)
                     progressBar.visibility = View.GONE
                 }

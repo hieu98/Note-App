@@ -83,6 +83,14 @@ class ImageActivity : AppCompatActivity() {
         // Nhận link ảnh trong storage
 //        val url : String? = intent.getStringExtra("url")
 //        Picasso.get().load(url).into(img_select)
+        val setava = intent.getBooleanExtra("setava",false)
+        if (setava){
+            setAvatar()
+            intent1 = Intent(this,MainActivity::class.java)
+            intent1.putExtra("setava",true)
+            startActivity(intent1)
+        }
+
 
         img_select!!.setOnClickListener {
             if (!a) {
@@ -119,6 +127,9 @@ class ImageActivity : AppCompatActivity() {
 
         btn_setava!!.setOnClickListener {
             setAvatar()
+            intent1 = Intent(this,MainActivity::class.java)
+            intent1.putExtra("setava",true)
+            startActivity(intent1)
         }
     }
 
