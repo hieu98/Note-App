@@ -1,6 +1,7 @@
 package com.example.noteapp.activity
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,7 +19,7 @@ class ListImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_image)
-
+        ActionBarCustom()
         val mAuth = FirebaseAuth.getInstance()
         val fbUser = mAuth!!.currentUser
         val storageRef = FirebaseStorage.getInstance().getReference(fbUser!!.uid).child("imagetotal/")
@@ -40,5 +41,24 @@ class ListImageActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun ActionBarCustom(){
+        supportActionBar?.title =""
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+            else -> {
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

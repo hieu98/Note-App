@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -57,6 +58,7 @@ class ImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
+        ActionBarCustom()
 
         mAuth = FirebaseAuth.getInstance()
         fbUser = mAuth!!.currentUser
@@ -94,7 +96,7 @@ class ImageActivity : AppCompatActivity() {
 
         btn_fiximage!!.setOnClickListener {
             // Truyền url sang SuaAnhActivity
-            var imageUrl: String = intent.getStringExtra("image_url").toString()
+            val imageUrl: String = intent.getStringExtra("image_url").toString()
 
             intent1 = Intent(this, SuaAnhActivity::class.java)
             intent1.putExtra("a", false)
@@ -110,7 +112,7 @@ class ImageActivity : AppCompatActivity() {
 
         btn_infoimage!!.setOnClickListener {
             if (checkPermission()){
-                var imageUrl: String = intent.getStringExtra("image_url").toString()
+                val imageUrl: String = intent.getStringExtra("image_url").toString()
                 imageShare(imageUrl)
             }
         }
@@ -122,9 +124,9 @@ class ImageActivity : AppCompatActivity() {
 
     fun getIncomingIntent() {
         if (intent.hasExtra("image_url")) {
-            var imageUrl: String = intent.getStringExtra("image_url").toString()
+            val imageUrl: String = intent.getStringExtra("image_url").toString()
 
-            var imageView = findViewById<ImageView>(R.id.img_select)
+            val imageView = findViewById<ImageView>(R.id.img_select)
             Glide.with(this)
                 .asBitmap()
                 .load(imageUrl)
@@ -133,7 +135,7 @@ class ImageActivity : AppCompatActivity() {
     }
 
     fun deleteImage() {
-        var imageUrl: String = intent.getStringExtra("image_url").toString()
+        val imageUrl: String = intent.getStringExtra("image_url").toString()
 
         val alertDialogDelete = android.app.AlertDialog.Builder(this)
         alertDialogDelete.setTitle("Do you want to delete this image?")
@@ -154,7 +156,7 @@ class ImageActivity : AppCompatActivity() {
     }
 
     fun setAvatar() {
-        var imageUrl: String = intent.getStringExtra("image_url").toString()
+        val imageUrl: String = intent.getStringExtra("image_url").toString()
 
         mDatabaseReference!!.child(fbUser!!.uid).child("The Album").child("User Avatar")
             .setValue(
@@ -170,7 +172,6 @@ class ImageActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()
             }
-
     }
 
     fun imageShare(url: String){
@@ -258,5 +259,24 @@ class ImageActivity : AppCompatActivity() {
         else
             ln!!.visibility = View.INVISIBLE
 
+    }
+
+    private fun ActionBarCustom(){
+        supportActionBar?.title =""
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+            else -> {
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
