@@ -1,11 +1,16 @@
 package com.example.noteapp.activity
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -31,6 +36,7 @@ import com.squareup.picasso.Picasso
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.*
 
 
 class ImageActivity : AppCompatActivity() {
@@ -55,6 +61,14 @@ class ImageActivity : AppCompatActivity() {
     val PERMISSION_WRITE = 0
     var fileUri : String? = null
 
+    private var mSensorManager : SensorManager?= null
+    private var acceleration = 0f
+    private var currentAcceleration = 0f
+    private var lastAcceleration = 0f
+
+    private val SHAKE_SLOP_TIME_MS = 999999
+    private val SHAKE_COUNT_RESET_TIME_MS = 5000
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
@@ -64,6 +78,15 @@ class ImageActivity : AppCompatActivity() {
         fbUser = mAuth!!.currentUser
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference.child("Users")
+
+        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        Objects.requireNonNull(mSensorManager)!!.registerListener(
+            sensorListener, mSensorManager!!
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
+        )
+        acceleration = 10f
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
 
         val storageRef =
             FirebaseStorage.getInstance().getReference(fbUser!!.uid).child("imagetotal/")
@@ -236,7 +259,7 @@ class ImageActivity : AppCompatActivity() {
                 grantResults.isNotEmpty()
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 ->{
-                    var imageUrl: String = intent.getStringExtra("image_url").toString()
+                    val imageUrl: String = intent.getStringExtra("image_url").toString()
                     val intent = Intent(Intent.ACTION_SEND)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     intent.putExtra(Intent.EXTRA_STREAM, imageUrl)
@@ -270,6 +293,69 @@ class ImageActivity : AppCompatActivity() {
         else
             ln!!.visibility = View.INVISIBLE
 
+    }
+
+    private val sensorListener: SensorEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
+            lastAcceleration = currentAcceleration
+            currentAcceleration = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+            val delta: Float = currentAcceleration - lastAcceleration
+            acceleration = acceleration * 0.9f + delta
+            if (acceleration > 12) {
+
+                var now : Long = System.currentTimeMillis();
+                // ignore shake events too close to each other (500ms)
+                var mShakeTimestamp: Long? = null
+                var mShakeCount = 1
+                if (mShakeTimestamp != null) {
+                    if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
+                        return;
+                    }
+
+                    if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now){
+                        mShakeCount = 0
+                    }
+                }
+                mShakeTimestamp = now
+                mShakeCount++
+
+                if (Round(x,4)< -30.0000){
+                    val imageView = findViewById<ImageView>(R.id.img_select)
+                    imageView.rotation = imageView.rotation - 90
+                    Toast.makeText(applicationContext, "Shake it Right", Toast.LENGTH_SHORT).show()
+                }else if (Round(x,4)>30.0000) {
+                    val imageView = findViewById<ImageView>(R.id.img_select)
+                    imageView.rotation = imageView.rotation + 90
+                    Toast.makeText(applicationContext, "Shake it Left", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    }
+    override fun onResume() {
+        super.onResume()
+        // Add the following line to register the Session Manager Listener onResume
+        mSensorManager?.registerListener(
+            sensorListener, mSensorManager!!.getDefaultSensor(
+                Sensor.TYPE_ACCELEROMETER
+            ), SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
+
+    override fun onPause() {
+        // Add the following line to unregister the Sensor Manager onPause
+        mSensorManager?.unregisterListener(sensorListener)
+        super.onPause()
+    }
+    fun Round(Rval: Float, Rpl: Int): Float {
+        var Rval = Rval
+        val p = Math.pow(10.0, Rpl.toDouble()).toFloat()
+        Rval = Rval * p
+        val tmp = Math.round(Rval).toFloat()
+        return tmp / p
     }
 
     private fun ActionBarCustom(){
