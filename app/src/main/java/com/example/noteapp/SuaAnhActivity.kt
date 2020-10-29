@@ -1,15 +1,12 @@
 package com.example.noteapp
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ContentValues
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Typeface
 import android.hardware.Sensor
@@ -24,7 +21,10 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.Interface.AddTextFragmentListener
@@ -33,8 +33,12 @@ import com.example.noteapp.Interface.FilterListFragmentListener
 import com.example.noteapp.Interface.IconFragmentListener
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
+import com.example.noteapp.activity.MainActivity
 import com.example.noteapp.adapter.ViewPagerAdapter
-import com.example.noteapp.fragment.*
+import com.example.noteapp.fragment.AddTextFragment
+import com.example.noteapp.fragment.EditImageFragment
+import com.example.noteapp.fragment.FilterListFragment
+import com.example.noteapp.fragment.IconFragment
 import com.example.noteapp.model.Image
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.Task
@@ -44,7 +48,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -60,13 +63,8 @@ import ja.burhanrashid52.photoeditor.PhotoEditor
 import ja.burhanrashid52.photoeditor.PhotoEditorView
 import kotlinx.android.synthetic.main.activity_suaanh.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
 import java.lang.Math.sqrt
-import java.net.URL
-import java.net.URLConnection
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -510,7 +508,9 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
             currentUserDb!!.child(name).updateChildren(result)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Updated Note", Toast.LENGTH_SHORT).show()
-                    onBackPressed()
+                    val intent1= Intent(this,MainActivity::class.java)
+                    intent1.putExtra("save img",true)
+                    startActivity(intent1)
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Update Failed ", Toast.LENGTH_SHORT).show()

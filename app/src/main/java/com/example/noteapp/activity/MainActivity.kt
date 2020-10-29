@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment2, "2").commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment1, "1").commit()
         supportFragmentManager.beginTransaction().hide(fragment2).commit()
-        supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
+        supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
         val setava = intent.getBooleanExtra("setava",false)
         if (setava){
             supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(fragment2).attach(fragment2).commit()
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onItemClick(itemIndex: Int, itemName: String) {
                 if (itemName == "HOME") {
-                    supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
+                    supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
                     active = fragment1
                     hidebutton(false)
                     a = false
