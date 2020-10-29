@@ -84,3 +84,4 @@ dependencies {
     implementation 'ja.burhanrashid52:photoeditor:1.0.0'
     implementation 'io.github.rockerhieu:emojicon:1.4.2'
 }
+

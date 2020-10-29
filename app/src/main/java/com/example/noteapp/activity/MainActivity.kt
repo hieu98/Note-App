@@ -70,6 +70,14 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment2, "2").commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment1, "1").commit()
         supportFragmentManager.beginTransaction().hide(fragment2).commit()
+        supportFragmentManager.beginTransaction().hide(active).show(fragment1).commit()
+        val setava = intent.getBooleanExtra("setava",false)
+        if (setava){
+            supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(fragment2).attach(fragment2).commit()
+            active = fragment2
+            hidebutton(false)
+            a = false
+        }
         nav.setSpaceOnClickListener(object : SpaceOnClickListener {
             override fun onCentreButtonClick() {
                 nav.setCentreButtonSelectable(true)

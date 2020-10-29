@@ -12,11 +12,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import com.google.firebase.storage.StorageReference
-import io.grpc.Context
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.signup_activity.*
-import java.util.*
 
 class SignUp : AppCompatActivity() {
     private val DEFAULT_IMAGE_URL =

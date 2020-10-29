@@ -207,39 +207,6 @@ class SuaAnhActivity : AppCompatActivity(), FilterListFragmentListener, EditImag
         image_preview.source.setImageBitmap(originalImage)
     }
 
-    fun loadBitmap(uri: String) : Bitmap?{
-        var bm: Bitmap? = null
-        var ips: InputStream? = null
-        var bis: BufferedInputStream? = null
-        try {
-            val conn: URLConnection = URL(uri).openConnection()
-            conn.connect()
-            ips = conn.getInputStream()
-            bis = BufferedInputStream(ips, 8192)
-            bm = BitmapFactory.decodeStream(bis)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-            if (ips != null) {
-                try {
-                    ips.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        return bm
-    }
-
-
-
     override fun onFilterSelected(filter: Filter) {
         resetControl()
         filteredImage = originalImage!!.copy(Bitmap.Config.ARGB_8888, true)

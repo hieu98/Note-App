@@ -1,13 +1,12 @@
 package com.example.noteapp.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.noteapp.R
-import android.util.Log
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.noteapp.adapter.ImageAdapter
-import com.example.noteapp.model.Image
+import com.example.noteapp.R
+import com.example.noteapp.adapter.SetAvaAdapter
 import com.example.noteapp.model.Item
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +19,7 @@ class ListImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_image)
-
+        ActionBarCustom()
         val mAuth = FirebaseAuth.getInstance()
         val fbUser = mAuth!!.currentUser
         val storageRef = FirebaseStorage.getInstance().getReference(fbUser!!.uid).child("imagetotal/")
@@ -35,12 +34,31 @@ class ListImageActivity : AppCompatActivity() {
                 item.downloadUrl.addOnSuccessListener {
                     imageList.add(Item(it.toString()))
                 }.addOnCompleteListener {
-                    recyclerView.adapter = ImageAdapter(imageList, this,)
+                    recyclerView.adapter = SetAvaAdapter(imageList, this,)
                     recyclerView.layoutManager = GridLayoutManager(this, 3)
                     progressBar.visibility = View.GONE
                 }
             }
         }
 
+    }
+
+    private fun ActionBarCustom(){
+        supportActionBar?.title =""
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+            else -> {
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
