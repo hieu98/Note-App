@@ -4,5 +4,9 @@ import java.io.Serializable
 
 @IgnoreExtraProperties
 
-data class User ( val userid:String, val username:String, val email:String, val phone:String):Serializable
+data class User (
+    val userid:String,
+    val username:String,
+    val email:String,
+    val phone:String):Serializable
 
