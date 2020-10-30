@@ -137,6 +137,8 @@ class ImageActivity : AppCompatActivity() {
 
         btn_delimage!!.setOnClickListener {
             deleteImage()
+            intent1 = Intent(this,MainActivity::class.java)
+            startActivity(intent1)
         }
 
         checkPermission()
