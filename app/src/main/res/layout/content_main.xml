@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context=".SuaAnhActivity"
+    tools:context=".activity.SuaAnhActivity"
     tools:showIn="@layout/activity_suaanh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">

@@ -26,7 +26,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.noteapp.R
-import com.example.noteapp.SuaAnhActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -178,7 +177,7 @@ class ImageActivity : AppCompatActivity() {
             val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
 
             storageRef.delete().addOnSuccessListener {
-                startActivity(Intent(this, ListImageActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
                 Toast.makeText(this, "Image Is Deleted", Toast.LENGTH_SHORT).show()
 
             }.addOnFailureListener {

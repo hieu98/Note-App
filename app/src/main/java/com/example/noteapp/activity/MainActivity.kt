@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.noteapp.R
-import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.fragment.HomeFragment
 import com.example.noteapp.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth

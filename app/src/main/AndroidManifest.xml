@@ -24,7 +24,7 @@
         <activity android:name=".activity.ListImageActivity"></activity>
         <activity android:name=".activity.ImageActivity" />
         <activity
-            android:name=".SuaAnhActivity"
+            android:name=".activity.SuaAnhActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity
             android:name=".activity.MainActivity"
