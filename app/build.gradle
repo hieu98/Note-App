@@ -13,8 +13,8 @@ android {
     }
     defaultConfig {
         applicationId "com.example.noteapp"
-        minSdkVersion 16
         targetSdkVersion 30
+        minSdkVersion 17
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -83,5 +83,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-vision-barcode-model:16.1.2'
     implementation 'ja.burhanrashid52:photoeditor:1.0.0'
     implementation 'io.github.rockerhieu:emojicon:1.4.2'
+
 }
 

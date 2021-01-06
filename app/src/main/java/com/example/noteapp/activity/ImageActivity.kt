@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.noteapp.R
+import com.example.noteapp.SuaAnhActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -136,8 +137,7 @@ class ImageActivity : AppCompatActivity() {
 
         btn_delimage!!.setOnClickListener {
             deleteImage()
-            intent1 = Intent(this,MainActivity::class.java)
-            startActivity(intent1)
+
         }
 
         checkPermission()

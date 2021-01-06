@@ -24,7 +24,7 @@
         <activity android:name=".activity.ListImageActivity"></activity>
         <activity android:name=".activity.ImageActivity" />
         <activity
-            android:name=".activity.SuaAnhActivity"
+            android:name=".SuaAnhActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity
             android:name=".activity.MainActivity"
@@ -41,6 +41,8 @@
         <activity
             android:name=".activity.SignUp"
             android:theme="@style/LogInAndLogUpPage" />
+        <activity android:name="com.amirarcane.lockscreen.activity.EnterPinActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
     </application>
 
 </manifest>
