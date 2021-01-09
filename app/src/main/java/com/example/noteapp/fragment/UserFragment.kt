@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.noteapp.R
+import com.example.noteapp.Utils.AES
 import com.example.noteapp.activity.ListImageActivity
 import com.example.noteapp.activity.Login
 import com.google.android.gms.tasks.OnSuccessListener
@@ -33,6 +34,9 @@ class UserFragment() : Fragment() {
     private var fbUser: FirebaseUser? = null
     private var AlbumRef: DatabaseReference? = null
     private var storageReference: StorageReference? = null
+
+    val secretKey: String = "662ede816988e58fb6d057d9d85605e0"
+    var encryptor = AES()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,9 +66,9 @@ class UserFragment() : Fragment() {
         val mUserReference = mDatabaseReference!!.child(fbUser!!.uid)
         mUserReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                tvName!!.text = "" + snapshot!!.child("Name").value
-                tvEmail!!.text = "" + snapshot!!.child("Email").value
-                tvPhone.text = "" + snapshot!!.child("Phone Number").value
+                tvName!!.text = encryptor.decryptWithAES(secretKey, "" + snapshot!!.child("Name").value)
+                tvEmail!!.text = encryptor.decryptWithAES(secretKey, "" + snapshot!!.child("Email").value)
+                tvPhone.text = encryptor.decryptWithAES(secretKey, "" + snapshot!!.child("Phone Number").value)
 
                 val message: String = "" + snapshot.child("The Album").child("User Avatar").value
                 Log.e("message",message)
@@ -184,11 +188,11 @@ class UserFragment() : Fragment() {
         linearLayout.addView(editText)
         alertDialog2.setView(linearLayout)
         alertDialog2.setPositiveButton("Update") { dialog, which ->
-            val value = editText.text.toString().trim { it <= ' ' }
+
+            val value = editText.text.toString().trim{ it <= ' ' }
             if (!TextUtils.isEmpty(value)) {
-                val result = java.util.HashMap<String, Any>()
-                result[key] = value
-                mDatabaseReference!!.child(fbUser!!.uid).updateChildren(result)
+                val encryptedName = encryptor.encrypt(value, secretKey)
+                mDatabaseReference!!.child(fbUser!!.uid).child("Name").setValue(encryptedName)
                     .addOnSuccessListener {
                         Toast.makeText(activity, "Updated New Name", Toast.LENGTH_SHORT).show()
                     }
@@ -225,9 +229,8 @@ class UserFragment() : Fragment() {
         alertDialog2.setView(linearLayout)
         alertDialog2.setPositiveButton("Update") { dialog, which ->
             val value = editText.text.toString().trim { it <= ' ' }
-            val result = java.util.HashMap<String, Any>()
-            result[key] = value
-            mDatabaseReference!!.child(fbUser!!.uid).updateChildren(result)
+            val encryptedPhone = encryptor.encrypt(value, secretKey)
+            mDatabaseReference!!.child(fbUser!!.uid).child("Phone Number").setValue(encryptedPhone)
                 .addOnSuccessListener {
                     Toast.makeText(activity, "Updated New Phone Number", Toast.LENGTH_SHORT).show()
                 }

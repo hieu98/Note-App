@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.amirarcane.lockscreen.activity.EnterPinActivity
 import com.example.noteapp.R
 import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.fragment.HomeFragment
@@ -25,6 +26,7 @@ import com.luseen.spacenavigation.SpaceItem
 import com.luseen.spacenavigation.SpaceNavigationView
 import com.luseen.spacenavigation.SpaceOnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
+import java.security.AccessController.getContext
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val intent = Intent(this, EnterPinActivity::class.java)
+        startActivity(intent)
+
         if (Build.VERSION.SDK_INT > 9) {
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
@@ -70,10 +76,14 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment2, "2").commit()
         supportFragmentManager.beginTransaction().add(R.id.fram, fragment1, "1").commit()
         supportFragmentManager.beginTransaction().hide(fragment2).commit()
-        supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
-        val setava = intent.getBooleanExtra("setava",false)
+        supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(
+            fragment1
+        ).commit()
+        val setava = intent.getBooleanExtra("setava", false)
         if (setava){
-            supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(fragment2).attach(fragment2).commit()
+            supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(fragment2).attach(
+                fragment2
+            ).commit()
             active = fragment2
             hidebutton(false)
             a = false
@@ -92,12 +102,16 @@ class MainActivity : AppCompatActivity() {
 
             override fun onItemClick(itemIndex: Int, itemName: String) {
                 if (itemName == "HOME") {
-                    supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(fragment1).show(fragment1).commit()
+                    supportFragmentManager.beginTransaction().hide(active).detach(fragment1).attach(
+                        fragment1
+                    ).show(fragment1).commit()
                     active = fragment1
                     hidebutton(false)
                     a = false
                 } else {
-                    supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(fragment2).attach(fragment2).commit()
+                    supportFragmentManager.beginTransaction().hide(active).show(fragment2).detach(
+                        fragment2
+                    ).attach(fragment2).commit()
                     active = fragment2
                     hidebutton(false)
                     a = false

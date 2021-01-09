@@ -11,6 +11,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.noteapp.R
+import com.example.noteapp.Utils.AES
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -29,6 +30,9 @@ class SignUp : AppCompatActivity() {
     private var fbAuth: FirebaseAuth? = null
     private var mRef: DatabaseReference? = null
     private var mDatabase: FirebaseDatabase? = null
+
+    val secretKey: String = "662ede816988e58fb6d057d9d85605e0"
+    var encryptor = AES()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +65,10 @@ class SignUp : AppCompatActivity() {
             val name = inputName!!.text.toString().trim()
             val phone = edt_phone_signUp.text.toString()
             val imageProfile = DEFAULT_IMAGE_URL
+
+            val encryptedEmail : String? = encryptor.encrypt(email, secretKey)
+            val encryptedName : String? = encryptor.encrypt(name, secretKey)
+            val encryptedPhone : String? = encryptor.encrypt(phone, secretKey)
 
             mprogressBar.visibility = View.VISIBLE
 
@@ -101,9 +109,9 @@ class SignUp : AppCompatActivity() {
 
                         val userId = fbAuth!!.currentUser!!.uid
                         val currentUserDb = mRef!!.child(userId)
-                        currentUserDb.child("Name").setValue(name)
-                        currentUserDb.child("Email").setValue(email)
-                        currentUserDb.child("Phone Number").setValue(phone)
+                        currentUserDb.child("Name").setValue(encryptedName)
+                        currentUserDb.child("Email").setValue(encryptedEmail)
+                        currentUserDb.child("Phone Number").setValue(encryptedPhone)
                         currentUserDb.child("The Album").child("User Avatar").setValue(imageProfile)
                         updateUserInfoAndUI()
 
