@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+
     private fun hidebutton(a: Boolean) {
         if (a){
             btn1.visibility= View.VISIBLE

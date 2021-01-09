@@ -13,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.amirarcane.lockscreen.activity.EnterPinActivity
+import com.amirarcane.lockscreen.util.Utils
 import com.example.noteapp.R
 import com.example.noteapp.Utils.AES
 import com.example.noteapp.activity.ListImageActivity
@@ -66,12 +68,21 @@ class UserFragment() : Fragment() {
         val mUserReference = mDatabaseReference!!.child(fbUser!!.uid)
         mUserReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                tvName!!.text = encryptor.decryptWithAES(secretKey, "" + snapshot!!.child("Name").value)
-                tvEmail!!.text = encryptor.decryptWithAES(secretKey, "" + snapshot!!.child("Email").value)
-                tvPhone.text = encryptor.decryptWithAES(secretKey, "" + snapshot!!.child("Phone Number").value)
+                tvName!!.text = encryptor.decryptWithAES(
+                    secretKey,
+                    "" + snapshot!!.child("Name").value
+                )
+                tvEmail!!.text = encryptor.decryptWithAES(
+                    secretKey,
+                    "" + snapshot!!.child("Email").value
+                )
+                tvPhone.text = encryptor.decryptWithAES(
+                    secretKey,
+                    "" + snapshot!!.child("Phone Number").value
+                )
 
                 val message: String = "" + snapshot.child("The Album").child("User Avatar").value
-                Log.e("message",message)
+                Log.e("message", message)
                 Picasso.get().load(message).into(imgAvatar)
             }
 
@@ -111,6 +122,12 @@ class UserFragment() : Fragment() {
         editAvatar.setOnClickListener(View.OnClickListener {
             startActivity(Intent(context, ListImageActivity::class.java))
         })
+
+        val btChangePin = view.findViewById<Button>(R.id.change_pin)
+        btChangePin.setOnClickListener {
+            val intent = EnterPinActivity.getIntent(context, true)
+            startActivity(intent)
+        }
     }
 
     companion object {
