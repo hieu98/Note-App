@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.noteapp.Interface.FilterListFragmentListener
 import com.example.noteapp.R
-import com.example.noteapp.SuaAnhActivity
+import com.example.noteapp.activity.SuaAnhActivity
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.SpaceItemDecoration
 import com.example.noteapp.adapter.ThumbnailAdapter

@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.activity
 
 import android.Manifest
 import android.app.AlertDialog
@@ -31,9 +31,9 @@ import com.example.noteapp.Interface.AddTextFragmentListener
 import com.example.noteapp.Interface.EditImageFragmentListener
 import com.example.noteapp.Interface.FilterListFragmentListener
 import com.example.noteapp.Interface.IconFragmentListener
+import com.example.noteapp.R
 import com.example.noteapp.Utils.BitmapUtils
 import com.example.noteapp.Utils.NonSwipeableViewPage
-import com.example.noteapp.activity.MainActivity
 import com.example.noteapp.adapter.ViewPagerAdapter
 import com.example.noteapp.fragment.AddTextFragment
 import com.example.noteapp.fragment.EditImageFragment

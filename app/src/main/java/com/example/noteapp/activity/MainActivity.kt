@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.amirarcane.lockscreen.activity.EnterPinActivity
 import com.example.noteapp.R
-import com.example.noteapp.SuaAnhActivity
 import com.example.noteapp.fragment.HomeFragment
 import com.example.noteapp.fragment.UserFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +25,6 @@ import com.luseen.spacenavigation.SpaceItem
 import com.luseen.spacenavigation.SpaceNavigationView
 import com.luseen.spacenavigation.SpaceOnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
-import java.security.AccessController.getContext
 
 
 class MainActivity : AppCompatActivity() {

@@ -8,6 +8,7 @@ android {
     buildToolsVersion "30.0.2"
     ndkVersion '21.3.6528147'
 
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -23,10 +24,10 @@ android {
     }
 
     buildTypes {
-        release { //Thêm một khối debug nếu muốn
+        release {
             shrinkResources true
             minifyEnabled true//Thu gọn code, false nếu không dùng
-            useProguard true   //Làm rối code
+            useProguard true //Làm rối code
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
         }
@@ -97,6 +98,5 @@ dependencies {
     implementation 'ja.burhanrashid52:photoeditor:1.0.0'
     implementation 'io.github.rockerhieu:emojicon:1.4.2'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.56'
-
 }
 
